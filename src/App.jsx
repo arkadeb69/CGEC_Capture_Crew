@@ -2286,28 +2286,22 @@ function LoginModal({ onClose, user, isUnauthorized }) {
 }
 
 function AdminDashboard({ user, adminData, archiveConfig, themeId, coverPhotos, onClose, liveEvents, liveEventsList, dynamicMembers, teamMembers, ccEvents, updateTheme, siteConfig, gallery, liveEventConfig, sendResendNotification, maintenanceConfig }) {
-  const broadcastEventEmail = async (eventId, force = false) => {
+  const triggerEventEmailIfNeeded = async (eventId, updatedPhotos) => {
     const eventObj = liveEventsList.find(e => e.id === eventId);
-    if (!eventObj) {
-      if (force) alert("Event not found.");
-      return;
-    }
+    if (!eventObj) return;
 
-    if (eventObj.emailSent && !force) {
+    if (eventObj.emailSent) {
       console.log(`Email already sent for event: ${eventId}`);
       return;
     }
 
-    const rawPhotos = (liveEvents[eventId] && (Array.isArray(liveEvents[eventId]) ? liveEvents[eventId].length > 0 : true))
-      ? liveEvents[eventId]
-      : (STATIC_EVENT_PHOTOS[eventId] || []);
+    const rawPhotos = updatedPhotos || (liveEvents[eventId] && (Array.isArray(liveEvents[eventId]) ? liveEvents[eventId].length > 0 : true) ? liveEvents[eventId] : STATIC_EVENT_PHOTOS[eventId]) || [];
     const allPhotos = flattenPhotos(rawPhotos);
 
     const firstPhoto = allPhotos[0] || (eventObj.iconUrl && eventObj.iconUrl.trim()) || (STATIC_EVENT_ICONS[eventId] || null);
 
     if (!firstPhoto && allPhotos.length === 0 && !eventObj.iconUrl) {
       console.log(`No photos or icon found for event ${eventId}, skipping email.`);
-      if (force) alert("Cannot send email: No photos or icon found for this event.");
       return;
     }
 
@@ -2324,14 +2318,10 @@ function AdminDashboard({ user, adminData, archiveConfig, themeId, coverPhotos, 
       await updateDoc(doc(db, "events", eventId), {
         emailSent: true
       });
-      if (force) alert(`Email announcement sent to all subscribers for "${eventObj.name}"!`);
+      console.log(`Marked event ${eventId} as emailSent.`);
     } catch (err) {
       console.error("Failed to mark event as emailSent:", err);
     }
-  };
-
-  const triggerEventEmailIfNeeded = async (eventId, updatedPhotos) => {
-    await broadcastEventEmail(eventId, false);
   };
 
   const [tab, setTab] = useState(adminData?.role === 'core_member' ? 'profile' : 'week');
@@ -3310,12 +3300,11 @@ function AdminDashboard({ user, adminData, archiveConfig, themeId, coverPhotos, 
                         </td>
                         <td style={{ padding: '1rem' }}>{flattenPhotos(liveEvents[ev.id]).length} photos</td>
                         <td style={{ padding: '1rem' }}>
-                          <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                          <div style={{ display: 'flex', gap: '0.5rem' }}>
                             <button onClick={() => {
                               setEditingEvent(ev.id);
                               setEventFormData(ev);
                             }} style={{ background: 'var(--gold)', border: 'none', color: 'var(--ink)', padding: '0.3rem 0.6rem', borderRadius: '4px', cursor: 'pointer', fontSize: '0.7rem' }}>Edit</button>
-                            <button onClick={() => broadcastEventEmail(ev.id, true)} style={{ background: 'rgba(201, 169, 110, 0.15)', border: '1px solid var(--gold)', color: 'var(--gold)', padding: '0.3rem 0.6rem', borderRadius: '4px', cursor: 'pointer', fontSize: '0.7rem' }}>📧 Send Email</button>
                             <button onClick={async () => {
                               if (window.confirm("Delete this event and ALL its photos?")) {
                                 try {
