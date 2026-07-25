@@ -576,8 +576,30 @@ export default function App() {
   // Newsletter Broadcast Progress State
   const [broadcastProgress, setBroadcastProgress] = useState(null);
 
-  const sendResendNotification = async ({ subject, title, description, imageUrl, link, photographer }) => {
+  const ensureAbsoluteUrl = (url) => {
+    if (!url) return '';
+    const str = typeof url === 'string' ? url : (url.url || url.imageUrl || '');
+    if (!str || typeof str !== 'string') return '';
+    const trimmed = str.trim();
+    if (!trimmed) return '';
+    if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
+      return trimmed;
+    }
+    const cleanPath = trimmed.startsWith('/') ? trimmed : `/${trimmed}`;
+    return `https://www.capturecrew.site${cleanPath}`;
+  };
+
+  const sendResendNotification = async ({ subject, title, description, imageUrl, images, link, photographer }) => {
     try {
+      const mainImageUrl = ensureAbsoluteUrl(imageUrl);
+      let secondaryImages = (images || []).map(ensureAbsoluteUrl).filter(url => url && url !== mainImageUrl);
+      let finalMainImage = mainImageUrl;
+      if (!finalMainImage && secondaryImages.length > 0) {
+        finalMainImage = secondaryImages[0];
+        secondaryImages = secondaryImages.slice(1);
+      }
+      const finalSecondaryImages = secondaryImages.slice(0, 3);
+
       // 1. Fetch active subscribers
       const subsSnap = await getDocs(query(collection(db, "subscribers"), where("active", "==", true)));
       if (subsSnap.empty) {
@@ -618,7 +640,8 @@ export default function App() {
   <p>We wanted to share this week's Capture Crew update with you.</p>
   <p style="font-size: 18px; font-weight: bold; margin-top: 24px; color: #111;">${title}</p>
   ${photographer ? `<p style="font-style: italic; color: #666; margin-top: -10px; margin-bottom: 20px; font-size: 14px;">By ${photographer}</p>` : ''}
-  ${imageUrl ? `<div style="margin: 24px 0; border-radius: 8px; overflow: hidden; border: 1px solid #e1e1e1;"><img src="${imageUrl}" alt="${title}" style="width: 100%; display: block; height: auto;" /></div>` : ''}
+  ${finalMainImage ? `<div style="margin: 24px 0; border-radius: 8px; overflow: hidden; border: 1px solid #e1e1e1; background-color: #000; text-align: center;"><img src="${finalMainImage}" alt="${title}" style="width: 100%; max-width: 600px; height: auto; max-height: 480px; object-fit: cover; display: block; margin: 0 auto;" /></div>` : ''}
+  ${finalSecondaryImages.length > 0 ? `<div style="display: flex; gap: 8px; margin: 12px 0 24px 0;">${finalSecondaryImages.map(imgUrl => `<div style="flex: 1; border-radius: 6px; overflow: hidden; border: 1px solid #e1e1e1; background-color: #000;"><img src="${imgUrl}" alt="${title}" style="width: 100%; height: 110px; object-fit: cover; display: block;" /></div>`).join('')}</div>` : ''}
   <p style="white-space: pre-line;">${description}</p>
   <p style="margin-top: 30px;">You can view the full details and showcase on the <a href="${link || 'https://www.capturecrew.site'}" style="color: #c9a96e; text-decoration: underline; font-weight: bold;">Capture Crew website</a>.</p>
   <p style="margin-top: 30px;">Feel free to reply directly to this email to share your thoughts, ask questions, or just say hello! We read every message and love hearing from our members.</p>
@@ -2263,25 +2286,37 @@ function LoginModal({ onClose, user, isUnauthorized }) {
 }
 
 function AdminDashboard({ user, adminData, archiveConfig, themeId, coverPhotos, onClose, liveEvents, liveEventsList, dynamicMembers, teamMembers, ccEvents, updateTheme, siteConfig, gallery, liveEventConfig, sendResendNotification, maintenanceConfig }) {
-  const triggerEventEmailIfNeeded = async (eventId, updatedPhotos) => {
+  const broadcastEventEmail = async (eventId, force = false) => {
     const eventObj = liveEventsList.find(e => e.id === eventId);
-    if (!eventObj) return;
+    if (!eventObj) {
+      if (force) alert("Event not found.");
+      return;
+    }
 
-    if (eventObj.emailSent) {
+    if (eventObj.emailSent && !force) {
       console.log(`Email already sent for event: ${eventId}`);
       return;
     }
 
-    if (!updatedPhotos || updatedPhotos.length === 0) {
-      console.log(`No photos for event ${eventId}, skipping email.`);
+    const rawPhotos = (liveEvents[eventId] && (Array.isArray(liveEvents[eventId]) ? liveEvents[eventId].length > 0 : true))
+      ? liveEvents[eventId]
+      : (STATIC_EVENT_PHOTOS[eventId] || []);
+    const allPhotos = flattenPhotos(rawPhotos);
+
+    const firstPhoto = allPhotos[0] || (eventObj.iconUrl && eventObj.iconUrl.trim()) || (STATIC_EVENT_ICONS[eventId] || null);
+
+    if (!firstPhoto && allPhotos.length === 0 && !eventObj.iconUrl) {
+      console.log(`No photos or icon found for event ${eventId}, skipping email.`);
+      if (force) alert("Cannot send email: No photos or icon found for this event.");
       return;
     }
 
-    sendResendNotification({
+    await sendResendNotification({
       subject: `New Event Announcement: ${eventObj.name}`,
       title: `Campus Event: ${eventObj.name}`,
       description: `${eventObj.desc || 'Check out our new event on the website!'}\n\nSubtitle: ${eventObj.subtitle || ''}`,
-      imageUrl: updatedPhotos[0] || ((eventObj.iconUrl && eventObj.iconUrl.trim().startsWith('http')) ? eventObj.iconUrl.trim() : null),
+      imageUrl: firstPhoto,
+      images: allPhotos.slice(0, 4),
       link: `https://www.capturecrew.site/events/${eventObj.slug || generateSlug(eventObj.name || eventObj.id)}`
     });
 
@@ -2289,10 +2324,14 @@ function AdminDashboard({ user, adminData, archiveConfig, themeId, coverPhotos, 
       await updateDoc(doc(db, "events", eventId), {
         emailSent: true
       });
-      console.log(`Marked event ${eventId} as emailSent.`);
+      if (force) alert(`Email announcement sent to all subscribers for "${eventObj.name}"!`);
     } catch (err) {
       console.error("Failed to mark event as emailSent:", err);
     }
+  };
+
+  const triggerEventEmailIfNeeded = async (eventId, updatedPhotos) => {
+    await broadcastEventEmail(eventId, false);
   };
 
   const [tab, setTab] = useState(adminData?.role === 'core_member' ? 'profile' : 'week');
@@ -3271,11 +3310,12 @@ function AdminDashboard({ user, adminData, archiveConfig, themeId, coverPhotos, 
                         </td>
                         <td style={{ padding: '1rem' }}>{flattenPhotos(liveEvents[ev.id]).length} photos</td>
                         <td style={{ padding: '1rem' }}>
-                          <div style={{ display: 'flex', gap: '0.5rem' }}>
+                          <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
                             <button onClick={() => {
                               setEditingEvent(ev.id);
                               setEventFormData(ev);
                             }} style={{ background: 'var(--gold)', border: 'none', color: 'var(--ink)', padding: '0.3rem 0.6rem', borderRadius: '4px', cursor: 'pointer', fontSize: '0.7rem' }}>Edit</button>
+                            <button onClick={() => broadcastEventEmail(ev.id, true)} style={{ background: 'rgba(201, 169, 110, 0.15)', border: '1px solid var(--gold)', color: 'var(--gold)', padding: '0.3rem 0.6rem', borderRadius: '4px', cursor: 'pointer', fontSize: '0.7rem' }}>📧 Send Email</button>
                             <button onClick={async () => {
                               if (window.confirm("Delete this event and ALL its photos?")) {
                                 try {
