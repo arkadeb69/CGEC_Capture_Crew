@@ -1600,66 +1600,6 @@ If you'd rather not receive these club updates, you can unsubscribe here: ${unsu
             generateSlug={generateSlug} 
             siteConfig={siteConfig} 
           />
-
-          <div className="events-grid">
-            {filteredEventsList.length === 0 ? (
-              <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '5rem 2rem', opacity: 0.5, border: '1px dashed var(--border)', borderRadius: '16px', marginBottom: '2rem' }}>
-                <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📅</div>
-                <h4 style={{ color: 'var(--gold)', marginBottom: '0.5rem' }}>No Events Scheduled for {siteConfig.activeYear || "2026"}</h4>
-                <p style={{ fontSize: '0.85rem' }}>Exciting events are being planned. Stay tuned for the shutter release!</p>
-              </div>
-            ) : (
-              filteredEventsList.slice(0, (isMobile && !expandedEvents) ? 3 : undefined).map(ev => {
-                const logoUrl = (ev.iconUrl && ev.iconUrl.trim().startsWith('http')) ? ev.iconUrl.trim() : (STATIC_EVENT_ICONS[ev.id] && STATIC_EVENT_ICONS[ev.id].trim().startsWith('http') ? STATIC_EVENT_ICONS[ev.id].trim() : null);
-                return (
-                  <div
-                    key={ev.id}
-                    className="event-card fade-in"
-                    style={{ "--c": ev.color }}
-                    onClick={() => ev.comingSoon ? alert("Coming Soon!") : navigate(`/events/${ev.slug || generateSlug(ev.name)}`)}
-                  >
-                    {logoUrl ? (
-                      <img src={logoUrl} alt={ev.name} className="event-card-icon" referrerPolicy="no-referrer" />
-                    ) : (
-                      <span className="event-emoji">{ev.emoji}</span>
-                    )}
-                    <div className="event-name">{ev.name}</div>
-                    <div className="event-subtitle" style={{ color: ev.color }}>{ev.subtitle}</div>
-                    <div className="event-date">{ev.date}</div>
-                    <div className="event-desc">{ev.desc}</div>
-                    <div className="event-highlight">{ev.highlight}</div>
-                    <button 
-                      className="event-dive-btn" 
-                    >
-                      {ev.comingSoon ? "Coming Soon " : "Dive In "}
-                    </button>
-                  </div>
-                );
-              })
-            )}
-            
-            {/* Global Gallery Card */}
-            <div 
-              className="event-card global-gallery-card fade-in" 
-              onClick={() => navigate('/events-gallery')}
-              style={{ cursor: 'pointer' }}
-            >
-              <div className="global-card-content">
-                <span className="event-emoji">📂</span>
-                <div className="event-name">Dive into Event <em>Archive</em></div>
-                <div className="event-subtitle" style={{ color: 'var(--gold)' }}>Universal Gallery</div>
-                <div className="event-desc">Explore every capture from every event we've ever hosted, all in one immersive timeline.</div>
-                <div className="global-card-badge">✨ IMMERSIVE VIEW</div>
-                <button className="event-dive-btn" style={{ marginTop: 'auto' }}>Open Archive </button>
-              </div>
-              <div className="global-card-bg"></div>
-            </div>
-          </div>
-          {isMobile && !expandedEvents && filteredEventsList.length > 3 && (
-            <div style={{ textAlign: 'center', marginTop: '3rem' }}>
-              <button className="event-dive-btn" onClick={() => setExpandedEvents(true)}>View All Events </button>
-            </div>
-          )}
         </div>
       </section>
         } />
