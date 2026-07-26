@@ -1174,7 +1174,7 @@ If you'd rather not receive these club updates, you can unsubscribe here: ${unsu
             { id: "contributors", label: "Contributors" },
             { id: "contact", label: "Contact Us" },
             { id: "about", label: "About Us" },
-            { id: "admin", label: "Admin Console" }
+            { id: "admin", label: "Admin Login" }
           ].map((item) => {
             const id = item.id;
             const label = item.label;
@@ -2001,7 +2001,7 @@ If you'd rather not receive these club updates, you can unsubscribe here: ${unsu
                 ["contributors", "Contributors"],
                 ["privacy-policy", "Privacy Policy"],
                 ["terms", "Terms of Service"],
-                ["admin", "Admin Console"]
+                ["admin", "Admin Login"]
 
               ].map(([id, label]) => {
                 let route = id === "home" ? "/" : `/${id}`;
@@ -2818,7 +2818,7 @@ function AdminDashboard({ user, adminData, archiveConfig, themeId, coverPhotos, 
       <div className="container" style={{ paddingBottom: '5rem' }}>
         <header className="event-page-header">
           <button className="back-btn" onClick={onClose}><ArrowLeft /> Close Dashboard</button>
-          <div className="section-label">Admin Console</div>
+          <div className="section-label">Admin Login</div>
           <h1 className="section-title">Team <em>Dashboard</em></h1>
           <p className="section-sub">Logged in as: {user.email}</p>
           <button className="event-dive-btn" style={{ position: 'absolute', top: '0', right: 0 }} onClick={() => signOut(auth)}>Sign Out</button>
