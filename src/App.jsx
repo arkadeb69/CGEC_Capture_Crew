@@ -811,14 +811,23 @@ If you'd rather not receive these club updates, you can unsubscribe here: ${unsu
         eventList.push({ id: d.id, ...data });
       });
 
-      // Seeding for static events
-      for (const ev of STATIC_EVENTS) {
-        if (!eventList.find(e => e.id === ev.id)) {
-          await setDoc(doc(db, "events", ev.id), {
-            ...ev,
-            calendarYear: "2026"
-          });
+      // Initial seeding for static events ONLY if collection is completely empty and seed marker is missing
+      try {
+        const seedRef = doc(db, "config", "events_seeded");
+        const seedSnap = await getDoc(seedRef);
+        if (!seedSnap.exists()) {
+          if (snap.empty) {
+            for (const ev of STATIC_EVENTS) {
+              await setDoc(doc(db, "events", ev.id), {
+                ...ev,
+                calendarYear: "2026"
+              });
+            }
+          }
+          await setDoc(seedRef, { seeded: true });
         }
+      } catch (e) {
+        console.warn("Seeding check note:", e);
       }
 
       setLiveEvents(eventsMap);
@@ -3310,6 +3319,7 @@ function AdminDashboard({ user, adminData, archiveConfig, themeId, coverPhotos, 
                               if (window.confirm("Delete this event and ALL its photos?")) {
                                 try {
                                   await deleteDoc(doc(db, "events", ev.id));
+                                  if (editingEvent === ev.id) setEditingEvent(null);
                                   alert("Event deleted.");
                                 } catch (err) { alert(err.message); }
                               }
@@ -5034,7 +5044,14 @@ function AdminApplications() {
                   <a href={app.portfolio} target="_blank" rel="noreferrer" style={{ color: 'var(--gold)', textDecoration: 'none' }}>View Link</a>
                 </td>
                 <td style={{ padding: '1rem' }}>
-                  <button onClick={() => deleteDoc(doc(db, "applications", app.id))} style={{ background: '#ff4444', border: 'none', color: '#fff', padding: '0.3rem 0.6rem', borderRadius: '4px', cursor: 'pointer', fontSize: '0.7rem' }}>Delete</button>
+                  <button onClick={async () => {
+                    if (window.confirm(`Delete recruitment application from ${app.name || app.email}?`)) {
+                      try {
+                        await deleteDoc(doc(db, "applications", app.id));
+                        alert("Application deleted.");
+                      } catch (err) { alert("Delete failed: " + err.message); }
+                    }
+                  }} style={{ background: '#ff4444', border: 'none', color: '#fff', padding: '0.3rem 0.6rem', borderRadius: '4px', cursor: 'pointer', fontSize: '0.7rem' }}>Delete</button>
                 </td>
               </tr>
             ))}
