@@ -1972,13 +1972,13 @@ If you'd rather not receive these club updates, you can unsubscribe here: ${unsu
       <footer className="footer">
         <div className="container">
           <div className="footer-top" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
-            <div style={{ fontSize: '0.75rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--gold)', marginBottom: '1rem', fontWeight: 'bold' }}>
+            <div style={{ fontSize: '0.75rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--gold)', marginBottom: '0.4rem', fontWeight: 'bold' }}>
               Capturing Moments · Creating Memories
             </div>
             <div className="footer-brand" style={{ marginBottom: '0.2rem' }}>
               {siteConfig.siteName?.split(' ')[0]} <span>{siteConfig.siteName?.split(' ')[1]}</span>
             </div>
-            <div style={{ fontSize: '0.9rem', color: 'var(--white)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '0.5rem', fontWeight: '500' }}>
+            <div style={{ fontSize: '0.9rem', color: 'var(--white)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '0.3rem', fontWeight: '500' }}>
               Photography Club of CGEC
             </div>
             <div style={{ fontSize: '0.8rem', color: 'var(--muted)', fontStyle: 'italic', letterSpacing: '0.05em' }}>
