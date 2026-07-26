@@ -2029,9 +2029,10 @@ If you'd rather not receive these club updates, you can unsubscribe here: ${unsu
             </div>
           </div>
           
-          <div className="footer-bottom" style={{ justifyContent: 'center', textAlign: 'center' }}>
-            <div className="footer-copy" style={{ textAlign: 'center' }}>
-              © 2026 Capture Crew. All rights reserved. Designed & Developed by <a href="https://www.instagram.com/destructive_antagonist/" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--gold)', textDecoration: 'none', fontWeight: 'bold' }}>Arkadeb Thokdar</a>
+          <div className="footer-bottom">
+            <div className="footer-copy">
+              <span className="footer-copy-line">© 2026 Capture Crew. All rights reserved.</span>
+              <span className="footer-credit-line">Designed & Developed by <a href="https://www.instagram.com/destructive_antagonist/" target="_blank" rel="noopener noreferrer">Arkadeb Thokdar</a></span>
             </div>
           </div>
         </div>
