@@ -1311,16 +1311,36 @@ If you'd rather not receive these club updates, you can unsubscribe here: ${unsu
           <p className="hero-tagline">{siteConfig.heroTagline}</p>
 
 
-          <button className="uiux-image-btn" onClick={() => {
-            navigate('/events');
-            setTimeout(() => {
-              const el = document.querySelector('.timeline-section-sticky-wrapper');
-              if (el) el.scrollIntoView({ behavior: 'smooth' });
-            }, 100);
-          }}>
-            <img src="/uiux_button.png" alt="Explore Events Gallery" className="uiux-btn-img" />
-            <span className="uiux-btn-shine"></span>
-          </button>
+          <a 
+            href="/events" 
+            className="event-btn"
+            onClick={(e) => {
+              e.preventDefault();
+              navigate('/events');
+              setTimeout(() => {
+                const el = document.querySelector('.timeline-section-sticky-wrapper');
+                if (el) el.scrollIntoView({ behavior: 'smooth' });
+              }, 100);
+            }}
+          >
+            <div className="event-icon">
+              <svg width="34" height="34" viewBox="0 0 34 34" fill="none" stroke="currentColor" strokeWidth="2">
+                <rect x="4" y="7" width="26" height="22" rx="3"/>
+                <line x1="4" y1="13" x2="30" y2="13"/>
+                <line x1="10" y1="3" x2="10" y2="10"/>
+                <line x1="24" y1="3" x2="24" y2="10"/>
+              </svg>
+            </div>
+
+            <div className="event-content">
+              <span className="label">EXPLORE</span>
+              <h3>EVENTS GALLERY</h3>
+            </div>
+
+            <div className="event-arrow">
+              →
+            </div>
+          </a>
         </div>
 
       </section>
@@ -1611,16 +1631,36 @@ If you'd rather not receive these club updates, you can unsubscribe here: ${unsu
                 </div>
               </div>
 
-              <button className="uiux-image-btn" onClick={() => {
-                navigate('/events');
-                setTimeout(() => {
-                  const el = document.querySelector('.timeline-section-sticky-wrapper');
-                  if (el) el.scrollIntoView({ behavior: 'smooth' });
-                }, 100);
-              }}>
-                <img src="/uiux_button.png" alt="Explore Events Gallery" className="uiux-btn-img" />
-                <span className="uiux-btn-shine"></span>
-              </button>
+              <a 
+                href="/events" 
+                className="event-btn"
+                onClick={(e) => {
+                  e.preventDefault();
+                  navigate('/events');
+                  setTimeout(() => {
+                    const el = document.querySelector('.timeline-section-sticky-wrapper');
+                    if (el) el.scrollIntoView({ behavior: 'smooth' });
+                  }, 100);
+                }}
+              >
+                <div className="event-icon">
+                  <svg width="34" height="34" viewBox="0 0 34 34" fill="none" stroke="currentColor" strokeWidth="2">
+                    <rect x="4" y="7" width="26" height="22" rx="3"/>
+                    <line x1="4" y1="13" x2="30" y2="13"/>
+                    <line x1="10" y1="3" x2="10" y2="10"/>
+                    <line x1="24" y1="3" x2="24" y2="10"/>
+                  </svg>
+                </div>
+
+                <div className="event-content">
+                  <span className="label">EXPLORE</span>
+                  <h3>EVENTS GALLERY</h3>
+                </div>
+
+                <div className="event-arrow">
+                  →
+                </div>
+              </a>
             </div>
           </div>
 
