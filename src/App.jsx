@@ -768,12 +768,22 @@ If you'd rather not receive these club updates, you can unsubscribe here: ${unsu
 
   // Parallel Real-time & Data Fetching
   useEffect(() => {
+    // Guaranteed max splash timeout so loading screen NEVER gets stuck on black screen
+    const maxSplashTimeout = setTimeout(() => {
+      setIsInitializing(false);
+    }, 1000);
+
+    const handleErr = (name) => (err) => {
+      console.warn(`Firestore snapshot note (${name}):`, err);
+      setIsInitializing(false);
+    };
+
     // 1. Members Snapshot
     const qMembers = query(collection(db, "members"), orderBy("createdAt", "desc"));
     const unsubMembers = onSnapshot(qMembers, (snap) => {
       const fetched = snap.docs.map(d => ({ id: d.id, ...d.data() }));
       setDynamicMembers(fetched);
-    });
+    }, handleErr("members"));
 
     // 1b. Team Members Snapshot
     const unsubTeam = onSnapshot(collection(db, "team_members"), (snap) => {
@@ -785,13 +795,12 @@ If you'd rather not receive these club updates, you can unsubscribe here: ${unsu
         coordinators: fetched.filter(m => m.category === 'coordinators').sort((a,b) => (a.order || 0) - (b.order || 0)),
         core: fetched.filter(m => m.category === 'core').sort((a,b) => (a.order || 0) - (b.order || 0)),
       };
-      // Fallback to static if empty (for initial migration)
       if (fetched.length === 0) {
         setTeamMembers(TEAM_DATA);
       } else {
         setTeamMembers(grouped);
       }
-    });
+    }, handleErr("team"));
 
     // 2. Fetch Gallery
     const unsubGallery = onSnapshot(collection(db, "gallery"), (snap) => {
@@ -801,7 +810,7 @@ If you'd rather not receive these club updates, you can unsubscribe here: ${unsu
       } else {
         setGallery(fetched);
       }
-    });
+    }, handleErr("gallery"));
 
     // 3. Events Snapshot
     const unsubEvents = onSnapshot(collection(db, "events"), async (snap) => {
@@ -813,7 +822,6 @@ If you'd rather not receive these club updates, you can unsubscribe here: ${unsu
         eventList.push({ id: d.id, ...data });
       });
 
-      // Initial seeding for static events ONLY if collection is completely empty and seed marker is missing
       try {
         const seedRef = doc(db, "config", "events_seeded");
         const seedSnap = await getDoc(seedRef);
@@ -835,16 +843,16 @@ If you'd rather not receive these club updates, you can unsubscribe here: ${unsu
       setLiveEvents(eventsMap);
       setLiveEventsList(eventList.sort((a,b) => (a.order || 99) - (b.order || 99)));
       setEventsLoaded(true);
-    });
+    }, handleErr("events"));
 
     // 4. CC Events Snapshot
     const unsubCCEvents = onSnapshot(collection(db, "cc_events"), (snap) => {
       setCcEvents(snap.docs.map(d => ({ id: d.id, ...d.data() })).sort((a,b) => (a.order || 99) - (b.order || 99)));
-    });
+    }, handleErr("cc_events"));
 
     const unsubConfig = onSnapshot(doc(db, "config", "archive"), (doc) => {
       if (doc.exists()) setArchiveConfig(doc.data());
-    });
+    }, handleErr("archive"));
     
     const unsubTheme = onSnapshot(doc(db, "config", "theme"), (doc) => {
       if (doc.exists()) {
@@ -852,16 +860,15 @@ If you'd rather not receive these club updates, you can unsubscribe here: ${unsu
         if (data.themeId) {
           setThemeId(data.themeId);
         } else if (data.primaryColor) {
-          // Fallback for old color wheel format
           const nearestTheme = THEMES.find(t => t.primary.toLowerCase() === data.primaryColor.toLowerCase()) || THEMES[0];
           setThemeId(nearestTheme.id);
         }
       }
-    });
+    }, handleErr("theme"));
 
     const unsubCovers = onSnapshot(doc(db, "config", "covers"), (doc) => {
       if (doc.exists() && doc.data().urls) setCoverPhotos(doc.data().urls);
-    });
+    }, handleErr("covers"));
 
     const unsubLiveEvent = onSnapshot(doc(db, "config", "live_event"), (doc) => {
       if (doc.exists()) {
@@ -874,7 +881,7 @@ If you'd rather not receive these club updates, you can unsubscribe here: ${unsu
           photos: data.photos || []
         });
       }
-    });
+    }, handleErr("live_event"));
 
     // 4. Site Config Listener
     const unsubSite = onSnapshot(doc(db, "config", "site"), (snap) => {
@@ -886,13 +893,11 @@ If you'd rather not receive these club updates, you can unsubscribe here: ${unsu
           activeYear: data.activeYear || "2026",
           availableYears: data.availableYears || ["2026"]
         }));
-        // Dismiss splash once site config is ready
-        setTimeout(() => setIsInitializing(false), 800);
+        setTimeout(() => setIsInitializing(false), 600);
       } else {
-        // Fallback if no config exists yet
         setIsInitializing(false);
       }
-    });
+    }, handleErr("site"));
 
     // 5. Maintenance Config Listener
     const unsubMaintenance = onSnapshot(doc(db, "maintenanceSettings", "global"), (snap) => {
@@ -901,9 +906,10 @@ If you'd rather not receive these club updates, you can unsubscribe here: ${unsu
       } else {
         setMaintenanceConfig({ enabled: false });
       }
-    });
+    }, handleErr("maintenance"));
 
     return () => {
+      clearTimeout(maxSplashTimeout);
       unsubMembers();
       unsubTeam();
       unsubEvents();
