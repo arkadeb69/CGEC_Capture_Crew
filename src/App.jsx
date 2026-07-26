@@ -12,6 +12,7 @@ import { generateSlug } from "./utils/slug";
 import MaintenancePage from "./components/MaintenancePage";
 import AdminMaintenance from "./components/AdminMaintenance";
 import AdminSessionUpgrade from "./components/AdminSessionUpgrade";
+import FrameNotFoundPage from "./components/NotFoundPage";
 import EventTimelineTrack from "./components/EventTimelineTrack";
 import CameraPopUpEffect from "./components/CameraPopUpEffect";
 
