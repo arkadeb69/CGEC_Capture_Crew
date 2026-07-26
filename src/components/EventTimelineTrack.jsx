@@ -1,21 +1,42 @@
 import { useState, useEffect, useRef } from "react";
 
-function parseEventDate(dateStr) {
-  if (!dateStr) return { day: '10', month: 'AUG', year: '2026' };
+function getOrdinalSuffix(n) {
+  const num = parseInt(n, 10);
+  if (isNaN(num)) return n;
+  const s = ["th", "st", "nd", "rd"];
+  const v = num % 100;
+  return num + (s[(v - 20) % 10] || s[v] || s[0]);
+}
+
+function parseEventDate(dateStr, calendarYear) {
+  if (!dateStr) return { day: '1st', month: 'AUG', year: calendarYear || '2026' };
   const str = dateStr.toString().trim();
   const parts = str.split(/\s+/);
   
+  let dayNum = '1';
+  let month = 'JAN';
+  let year = calendarYear || '2026';
+
   if (parts.length >= 3) {
-    const day = parts[0].replace(/[^0-9]/g, '') || '10';
-    const month = parts[1].substring(0, 3).toUpperCase();
-    const year = parts[2] || '2026';
-    return { day: day.padStart(2, '0'), month, year };
+    dayNum = parts[0].replace(/[^0-9]/g, '') || '1';
+    month = parts[1].substring(0, 3).toUpperCase();
+    year = parts[2] || calendarYear || '2026';
   } else if (parts.length === 2) {
-    const month = parts[0].substring(0, 3).toUpperCase();
-    const year = parts[1] || '2026';
-    return { day: '15', month, year };
+    if (/^[0-9]+/.test(parts[0])) {
+      dayNum = parts[0].replace(/[^0-9]/g, '') || '1';
+      month = parts[1].substring(0, 3).toUpperCase();
+    } else {
+      month = parts[0].substring(0, 3).toUpperCase();
+      year = parts[1] || calendarYear || '2026';
+      dayNum = '1';
+    }
+  } else {
+    month = str.substring(0, 3).toUpperCase();
+    year = calendarYear || '2026';
   }
-  return { day: '01', month: str.substring(0, 3).toUpperCase(), year: '2026' };
+
+  const dayWithOrdinal = getOrdinalSuffix(dayNum);
+  return { day: dayWithOrdinal, month, year };
 }
 
 export default function EventTimelineTrack({ events, staticIcons, navigate, generateSlug, siteConfig }) {
