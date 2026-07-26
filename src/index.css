@@ -3562,7 +3562,7 @@ section { padding: 7rem 0; }
   cursor: wait;
 }
 
-/* EVENT GALLERY BUTTON COMPONENT */
+/* MINIMAL SLEEK EVENT GALLERY BUTTON COMPONENT */
 .event-btn {
   --gold: var(--gold, #cfa86b);
   --gold-light: #e4c38f;
@@ -3571,20 +3571,20 @@ section { padding: 7rem 0; }
   display: flex;
   align-items: center;
   width: 100%;
-  max-width: 580px;
-  height: 100px;
+  max-width: 360px;
+  height: 60px;
   overflow: hidden;
 
   text-decoration: none;
   color: var(--white, #fff);
 
-  background: #181614;
-  border: 1px solid rgba(207, 168, 107, 0.55);
-  border-radius: 24px;
+  background: #161514;
+  border: 1px solid rgba(207, 168, 107, 0.45);
+  border-radius: 16px;
 
-  transition: 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: 0.4s cubic-bezier(0.22, 1, 0.36, 1);
   box-sizing: border-box;
-  margin-top: 1rem;
+  margin-top: 0.75rem;
 }
 
 .event-btn::before {
@@ -3593,11 +3593,11 @@ section { padding: 7rem 0; }
   inset: 0;
   background: radial-gradient(
     circle at right,
-    rgba(207, 168, 107, 0.18),
+    rgba(207, 168, 107, 0.15),
     transparent 60%
   );
   opacity: 0;
-  transition: 0.5s;
+  transition: 0.4s;
 }
 
 .event-btn:hover::before {
@@ -3606,29 +3606,34 @@ section { padding: 7rem 0; }
 
 /* LEFT ICON BOX */
 .event-btn .event-icon {
-  width: 130px;
+  width: 78px;
   height: 100%;
   background: linear-gradient(135deg, #d9ba84, #c89d60);
 
-  color: #1b1b1b;
+  color: #111;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
   clip-path: polygon(0 0, 88% 0, 100% 100%, 0 100%);
-  transition: 0.5s;
+  transition: 0.4s ease;
   flex-shrink: 0;
 }
 
 .event-btn:hover .event-icon {
-  width: 145px;
+  width: 88px;
+}
+
+.event-btn .event-icon svg {
+  width: 22px;
+  height: 22px;
 }
 
 /* CENTER CONTENT */
 .event-btn .event-content {
   flex: 1;
-  padding-left: 30px;
+  padding-left: 16px;
   z-index: 2;
   text-align: left;
 }
@@ -3636,41 +3641,41 @@ section { padding: 7rem 0; }
 .event-btn .label {
   display: block;
   color: var(--gold, #cfa86b);
-  letter-spacing: 0.35em;
-  font-size: 0.75rem;
+  letter-spacing: 0.28em;
+  font-size: 0.6rem;
 
   transform: translateY(0);
-  transition: 0.45s;
+  transition: 0.4s;
   font-weight: 700;
 }
 
 .event-btn .event-content h3 {
-  margin-top: 6px;
+  margin-top: 2px;
   margin-bottom: 0;
-  font-size: 1.45rem;
-  font-weight: 800;
-  letter-spacing: 0.05em;
+  font-size: 0.92rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
   color: var(--white, #fff);
 
-  transition: 0.45s;
+  transition: 0.4s;
   line-height: 1.1;
 }
 
 .event-btn:hover .label {
-  transform: translateY(-4px);
+  transform: translateY(-2px);
   color: #f0cf96;
 }
 
 .event-btn:hover .event-content h3 {
-  transform: translateX(8px);
+  transform: translateX(5px);
 }
 
 /* RIGHT ARROW */
 .event-btn .event-arrow {
-  width: 52px;
-  height: 52px;
+  width: 36px;
+  height: 36px;
 
-  margin-right: 25px;
+  margin-right: 14px;
 
   border-radius: 50%;
   background: linear-gradient(135deg, #e0bf89, #c89d60);
@@ -3681,57 +3686,58 @@ section { padding: 7rem 0; }
   align-items: center;
   justify-content: center;
 
-  font-size: 26px;
+  font-size: 18px;
   font-weight: 700;
 
-  transition: 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: 0.4s cubic-bezier(0.22, 1, 0.36, 1);
 
-  box-shadow: 0 0 0 rgba(207, 168, 107, 0.4);
+  box-shadow: 0 0 0 rgba(207, 168, 107, 0.3);
   flex-shrink: 0;
 }
 
 .event-btn:hover .event-arrow {
-  transform: translateX(8px) scale(1.12);
-  box-shadow: 0 0 35px rgba(207, 168, 107, 0.45);
+  transform: translateX(5px) scale(1.1);
+  box-shadow: 0 0 25px rgba(207, 168, 107, 0.4);
 }
 
 /* Border Glow */
 .event-btn:hover {
   border-color: #e5c38b;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45), 0 0 35px rgba(207, 168, 107, 0.22);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.45), 0 0 20px rgba(207, 168, 107, 0.2);
 }
 
 @media (max-width: 600px) {
   .event-btn {
-    height: 80px;
-    border-radius: 18px;
+    height: 52px;
+    border-radius: 14px;
+    max-width: 100%;
   }
   .event-btn .event-icon {
-    width: 95px;
+    width: 65px;
   }
   .event-btn:hover .event-icon {
-    width: 105px;
+    width: 72px;
   }
   .event-btn .event-icon svg {
-    width: 24px;
-    height: 24px;
+    width: 18px;
+    height: 18px;
   }
   .event-btn .event-content {
-    padding-left: 16px;
+    padding-left: 12px;
   }
   .event-btn .label {
-    font-size: 0.65rem;
-    letter-spacing: 0.25em;
+    font-size: 0.55rem;
+    letter-spacing: 0.2em;
   }
   .event-btn .event-content h3 {
-    font-size: 1.05rem;
-    margin-top: 3px;
+    font-size: 0.82rem;
+    margin-top: 1px;
   }
   .event-btn .event-arrow {
-    width: 40px;
-    height: 40px;
-    font-size: 20px;
-    margin-right: 14px;
+    width: 30px;
+    height: 30px;
+    font-size: 15px;
+    margin-right: 10px;
   }
 }
 

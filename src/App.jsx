@@ -1324,7 +1324,7 @@ If you'd rather not receive these club updates, you can unsubscribe here: ${unsu
             }}
           >
             <div className="event-icon">
-              <svg width="34" height="34" viewBox="0 0 34 34" fill="none" stroke="currentColor" strokeWidth="2">
+              <svg width="22" height="22" viewBox="0 0 34 34" fill="none" stroke="currentColor" strokeWidth="2">
                 <rect x="4" y="7" width="26" height="22" rx="3"/>
                 <line x1="4" y1="13" x2="30" y2="13"/>
                 <line x1="10" y1="3" x2="10" y2="10"/>
@@ -1334,7 +1334,7 @@ If you'd rather not receive these club updates, you can unsubscribe here: ${unsu
 
             <div className="event-content">
               <span className="label">EXPLORE</span>
-              <h3>EVENTS GALLERY</h3>
+              <h3>EVENTS & MEMORIES</h3>
             </div>
 
             <div className="event-arrow">
@@ -1644,7 +1644,7 @@ If you'd rather not receive these club updates, you can unsubscribe here: ${unsu
                 }}
               >
                 <div className="event-icon">
-                  <svg width="34" height="34" viewBox="0 0 34 34" fill="none" stroke="currentColor" strokeWidth="2">
+                  <svg width="22" height="22" viewBox="0 0 34 34" fill="none" stroke="currentColor" strokeWidth="2">
                     <rect x="4" y="7" width="26" height="22" rx="3"/>
                     <line x1="4" y1="13" x2="30" y2="13"/>
                     <line x1="10" y1="3" x2="10" y2="10"/>
@@ -1654,7 +1654,7 @@ If you'd rather not receive these club updates, you can unsubscribe here: ${unsu
 
                 <div className="event-content">
                   <span className="label">EXPLORE</span>
-                  <h3>EVENTS GALLERY</h3>
+                  <h3>CC EVENTS</h3>
                 </div>
 
                 <div className="event-arrow">
