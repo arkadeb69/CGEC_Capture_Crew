@@ -3039,7 +3039,7 @@ section { padding: 7rem 0; }
 
 .window-dive-btn:disabled,
 .timeline-node-card-wrap:not(.active) .window-dive-btn,
-.mobile-card:not(.active-card) .window-dive-btn {
+.mobile-card-wrapper:not(.active) .window-dive-btn {
   opacity: 0.35 !important;
   pointer-events: none !important;
   cursor: not-allowed !important;
@@ -3052,11 +3052,13 @@ section { padding: 7rem 0; }
   opacity: 0.9;
 }
 
-/* MOBILE TIMELINE */
+/* MOBILE & TABLET VERTICAL SCROLL TIMELINE STYLING */
 .mobile-timeline-wrap {
   position: relative;
-  padding-left: 45px;
-  padding-right: 10px;
+  padding: 1.5rem 0.5rem 4rem 45px;
+  box-sizing: border-box;
+  max-width: 500px;
+  margin: 0 auto;
 }
 
 .mobile-track-line {
@@ -3065,7 +3067,9 @@ section { padding: 7rem 0; }
   bottom: 0;
   left: 20px;
   width: 3px;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.15);
+  border-left: 1px dashed rgba(255, 255, 255, 0.3);
+  z-index: 10;
 }
 
 .mobile-track-progress {
@@ -3073,50 +3077,84 @@ section { padding: 7rem 0; }
   top: 0;
   left: 0;
   width: 100%;
-  background: var(--gold);
-}
-
-.mobile-car-marker {
-  position: absolute;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  z-index: 10;
-}
-
-.mobile-car-marker .car-vehicle {
-  font-size: 1.4rem;
-}
-
-.mobile-car-marker .car-date-badge {
-  background: #000;
-  border: 1px solid var(--gold);
-  color: var(--gold);
-  font-size: 0.65rem;
-  font-family: 'Space Mono', monospace;
-  padding: 2px 6px;
-  border-radius: 4px;
-  white-space: nowrap;
+  background: linear-gradient(180deg, #ff9933, var(--gold), #50C878);
+  box-shadow: 0 0 10px var(--gold);
+  transition: height 0.35s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 .mobile-cards-list {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 2.2rem;
+  z-index: 20;
+  position: relative;
 }
 
-.mobile-card {
-  background: rgba(18, 19, 22, 0.92);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 14px;
-  padding: 1.2rem;
+.mobile-card-wrapper {
+  position: relative;
+  transition: opacity 0.35s ease, transform 0.35s cubic-bezier(0.25, 1, 0.5, 1), filter 0.35s ease;
+  opacity: 0.45;
+  filter: blur(0.5px) grayscale(40%);
+  transform: scale(0.96);
 }
 
-.mobile-card.active-card {
+.mobile-card-wrapper.active {
+  opacity: 1 !important;
+  filter: blur(0px) grayscale(0%) !important;
+  transform: scale(1.03) !important;
+  z-index: 30;
+}
+
+.mobile-station-node {
+  position: absolute;
+  left: -25px;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 25;
+  pointer-events: none;
+}
+
+.mobile-station-node .station-ring {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--ink);
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  transition: all 0.3s ease;
+}
+
+.mobile-station-node.passed .station-ring {
   border-color: var(--item-color);
-  box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+  background: var(--item-color);
+}
+
+.mobile-station-node.active .station-ring {
+  transform: scale(1.4);
+  background: var(--item-color);
+  border-color: #fff;
+  box-shadow: 0 0 16px var(--item-color);
+}
+
+.mobile-connector-line {
+  position: absolute;
+  left: -25px;
+  top: 50%;
+  width: 25px;
+  height: 2px;
+  background: var(--item-color);
+  opacity: 0.4;
+  transform: translateY(-50%);
+}
+
+.mobile-card-wrapper.active .mobile-connector-line {
+  opacity: 1;
+  box-shadow: 0 0 8px var(--item-color);
+}
+
+.retro-window-card.mobile-card {
+  width: 100%;
+  height: auto;
+  min-height: 220px;
 }
 
 

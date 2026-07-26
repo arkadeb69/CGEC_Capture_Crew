@@ -20,11 +20,13 @@ function parseEventDate(dateStr) {
 
 export default function EventTimelineTrack({ events, staticIcons, navigate, generateSlug, siteConfig }) {
   const sectionRef = useRef(null);
+  const mobileWrapRef = useRef(null);
   const [scrollProgress, setScrollProgress] = useState(0);
-  const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' ? window.innerWidth <= 768 : false);
+  const [mobileActiveIndex, setMobileActiveIndex] = useState(0);
+  const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' ? window.innerWidth <= 1024 : false);
 
   useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    const handleResize = () => setIsMobile(window.innerWidth <= 1024);
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
@@ -68,6 +70,35 @@ export default function EventTimelineTrack({ events, staticIcons, navigate, gene
     handleScroll();
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  // Mobile / Tablet active card detection on vertical scroll
+  useEffect(() => {
+    if (!isMobile) return;
+
+    const handleMobileScroll = () => {
+      if (!mobileWrapRef.current) return;
+      const cards = mobileWrapRef.current.querySelectorAll('.mobile-card-wrapper');
+      const viewportCenter = window.innerHeight * 0.45;
+      let closestIdx = 0;
+      let minDistance = Infinity;
+
+      cards.forEach((card, idx) => {
+        const rect = card.getBoundingClientRect();
+        const cardCenter = rect.top + rect.height / 2;
+        const dist = Math.abs(cardCenter - viewportCenter);
+        if (dist < minDistance) {
+          minDistance = dist;
+          closestIdx = idx;
+        }
+      });
+
+      setMobileActiveIndex(closestIdx);
+    };
+
+    window.addEventListener("scroll", handleMobileScroll, { passive: true });
+    handleMobileScroll();
+    return () => window.removeEventListener("scroll", handleMobileScroll);
+  }, [isMobile, allTrackItems.length]);
 
   // Restore scroll position when returning from an event detail view
   useEffect(() => {
@@ -119,19 +150,19 @@ export default function EventTimelineTrack({ events, staticIcons, navigate, gene
         </div>
 
         {isMobile ? (
-          /* MOBILE VERTICAL TRACK */
-          <div className="mobile-timeline-wrap">
+          /* MOBILE & TABLET VERTICAL SCROLL TIMELINE TRACK */
+          <div className="mobile-timeline-wrap" ref={mobileWrapRef}>
             <div className="mobile-track-line">
               <div 
                 className="mobile-track-progress" 
-                style={{ height: `${scrollProgress * 100}%` }}
+                style={{ height: `${((mobileActiveIndex + 1) / totalItems) * 100}%` }}
               ></div>
             </div>
 
             <div className="mobile-cards-list">
               {allTrackItems.map((item, idx) => {
-                const isActive = idx === activeIndex;
-                const isPassed = idx <= activeIndex;
+                const isActive = idx === mobileActiveIndex;
+                const isPassed = idx <= mobileActiveIndex;
                 const dateParsed = parseEventDate(item.date);
                 const logoUrl = (item.iconUrl && item.iconUrl.trim().startsWith('http')) 
                   ? item.iconUrl.trim() 
@@ -141,54 +172,61 @@ export default function EventTimelineTrack({ events, staticIcons, navigate, gene
                 return (
                   <div 
                     key={item.id || idx}
-                    className={`retro-window-card mobile-card ${isActive ? 'active' : ''} ${isPassed ? 'passed' : ''}`}
+                    className={`mobile-card-wrapper ${isActive ? 'active' : ''} ${isPassed ? 'passed' : ''}`}
                     style={{ "--item-color": itemColor }}
                   >
-                    <div className="window-header" style={{ background: itemColor }}>
-                      <div className="window-dots"><span></span><span></span><span></span></div>
+                    <div className={`mobile-station-node ${isActive ? 'active' : ''} ${isPassed ? 'passed' : ''}`}>
+                      <div className="station-ring"></div>
                     </div>
-                    
-                    <div className="window-body">
-                      <div className="window-date-badge">
-                        <div className="date-day">{dateParsed.day}</div>
-                        <div className="date-month-wrap">
-                          <div className="date-month">{dateParsed.month}</div>
-                          <div className="date-year">{dateParsed.year}</div>
+                    <div className="mobile-connector-line"></div>
+
+                    <div className="retro-window-card mobile-card">
+                      <div className="window-header" style={{ background: itemColor }}>
+                        <div className="window-dots"><span></span><span></span><span></span></div>
+                      </div>
+                      
+                      <div className="window-body">
+                        <div className="window-date-badge">
+                          <div className="date-day">{dateParsed.day}</div>
+                          <div className="date-month-wrap">
+                            <div className="date-month">{dateParsed.month}</div>
+                            <div className="date-year">{dateParsed.year}</div>
+                          </div>
                         </div>
-                      </div>
 
-                      <div className="window-title-row">
-                        {logoUrl ? (
-                          <img src={logoUrl} alt={item.name} className="window-logo" referrerPolicy="no-referrer" />
-                        ) : (
-                          <span className="window-emoji">{item.emoji || '📸'}</span>
-                        )}
-                        <h4 className="window-title">{item.name}</h4>
-                      </div>
+                        <div className="window-title-row">
+                          {logoUrl ? (
+                            <img src={logoUrl} alt={item.name} className="window-logo" referrerPolicy="no-referrer" />
+                          ) : (
+                            <span className="window-emoji">{item.emoji || '📸'}</span>
+                          )}
+                          <h4 className="window-title">{item.name}</h4>
+                        </div>
 
-                      <div className="window-subtitle" style={{ color: itemColor }}>{item.subtitle}</div>
-                      <p className="window-desc">{item.desc}</p>
-                      {item.highlight && <div className="window-highlight">{item.highlight}</div>}
+                        <div className="window-subtitle" style={{ color: itemColor }}>{item.subtitle}</div>
+                        <p className="window-desc">{item.desc}</p>
+                        {item.highlight && <div className="window-highlight">{item.highlight}</div>}
 
-                      <div className="window-footer">
-                        <button 
-                          className="window-dive-btn"
-                          style={{ background: itemColor }}
-                          disabled={!isActive}
-                          onClick={() => {
-                            if (!isActive) return;
-                            sessionStorage.setItem("cc_events_timeline_scroll", window.scrollY.toString());
-                            if (item.type === 'archive') {
-                              navigate('/events-gallery');
-                            } else if (item.comingSoon) {
-                              alert("Coming Soon!");
-                            } else {
-                              navigate(`/events/${item.slug || generateSlug(item.name)}`);
-                            }
-                          }}
-                        >
-                          {item.type === 'archive' ? 'Open Archive 📂' : (item.comingSoon ? 'Coming Soon ⏳' : 'DIVE IN 🚀')}
-                        </button>
+                        <div className="window-footer">
+                          <button 
+                            className="window-dive-btn"
+                            style={{ background: itemColor }}
+                            disabled={!isActive}
+                            onClick={() => {
+                              if (!isActive) return;
+                              sessionStorage.setItem("cc_events_timeline_scroll", window.scrollY.toString());
+                              if (item.type === 'archive') {
+                                navigate('/events-gallery');
+                              } else if (item.comingSoon) {
+                                alert("Coming Soon!");
+                              } else {
+                                navigate(`/events/${item.slug || generateSlug(item.name)}`);
+                              }
+                            }}
+                          >
+                            {item.type === 'archive' ? 'Open Archive 📂' : (item.comingSoon ? 'Coming Soon ⏳' : 'DIVE IN 🚀')}
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>
