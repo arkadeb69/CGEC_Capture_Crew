@@ -6540,8 +6540,73 @@ function ContactUsPage() {
                   </div>
                 )}
 
-                <button type="submit" className="form-submit" disabled={loading} style={{ marginTop: '0.5rem', width: '100%', padding: '1rem', fontSize: '1.1rem' }}>
-                  {loading ? "Sending Message..." : "Send Message"}
+                <button className="uiverse-submit-btn" type="submit" disabled={loading}>
+                  <div className="outline"></div>
+                  <div className="state state--default">
+                    <div className="icon">
+                      <svg
+                        width="1em"
+                        height="1em"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M22 2L11 13"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                        <path
+                          d="M22 2L15 22L11 13L2 9L22 2Z"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                    </div>
+                    <p>
+                      <span style={{ '--i': 1 }}>S</span>
+                      <span style={{ '--i': 2 }}>e</span>
+                      <span style={{ '--i': 3 }}>n</span>
+                      <span style={{ '--i': 4 }}>d</span>
+                      <span style={{ '--i': 5 }}>&nbsp;</span>
+                      <span style={{ '--i': 6 }}>M</span>
+                      <span style={{ '--i': 7 }}>e</span>
+                      <span style={{ '--i': 8 }}>s</span>
+                      <span style={{ '--i': 9 }}>s</span>
+                      <span style={{ '--i': 10 }}>a</span>
+                      <span style={{ '--i': 11 }}>g</span>
+                      <span style={{ '--i': 12 }}>e</span>
+                    </p>
+                  </div>
+                  <div className="state state--sent">
+                    <div className="icon">
+                      <svg
+                        width="1em"
+                        height="1em"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M20 6L9 17L4 12"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                    </div>
+                    <p>
+                      <span style={{ '--i': 1 }}>S</span>
+                      <span style={{ '--i': 2 }}>e</span>
+                      <span style={{ '--i': 3 }}>n</span>
+                      <span style={{ '--i': 4 }}>t</span>
+                    </p>
+                  </div>
                 </button>
               </form>
             </div>
