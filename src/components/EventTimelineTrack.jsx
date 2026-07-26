@@ -106,7 +106,6 @@ export default function EventTimelineTrack({ events, staticIcons, navigate, gene
                 className="mobile-car-marker" 
                 style={{ top: `${scrollProgress * 100}%` }}
               >
-                <div className="car-vehicle">🚘</div>
                 <div className="car-date-badge">{currentActiveItem?.date || "2026"}</div>
               </div>
             </div>
@@ -128,7 +127,6 @@ export default function EventTimelineTrack({ events, staticIcons, navigate, gene
                     style={{ "--item-color": itemColor }}
                   >
                     <div className="window-header" style={{ background: itemColor }}>
-                      <span className="window-platform-label">PLATFORM 0{idx + 1}</span>
                       <div className="window-dots"><span></span><span></span><span></span></div>
                     </div>
                     
@@ -190,12 +188,11 @@ export default function EventTimelineTrack({ events, staticIcons, navigate, gene
                   style={{ width: `${translateX + 180}px` }}
                 ></div>
 
-                {/* MOVING VEHICLE */}
+                {/* MOVING DATE MARKER */}
                 <div 
                   className="moving-vehicle-box"
                   style={{ left: `${translateX + 120}px` }}
                 >
-                  <div className="vehicle-sprite">🚂</div>
                   <div className="vehicle-date-tag">{currentActiveItem?.date || "2026"}</div>
                 </div>
 
@@ -248,7 +245,6 @@ export default function EventTimelineTrack({ events, staticIcons, navigate, gene
                       {/* RETRO WINDOW CARD */}
                       <div className="retro-window-card">
                         <div className="window-header" style={{ background: itemColor }}>
-                          <span className="window-platform-label">PLATFORM 0{idx + 1}</span>
                           <div className="window-dots"><span></span><span></span><span></span></div>
                         </div>
                         
