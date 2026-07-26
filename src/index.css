@@ -1104,17 +1104,18 @@ section { padding: 7rem 0; }
 .social-icon:hover { border-color: var(--gold); color: var(--gold); background: rgba(201,169,110,0.05); }
 
 .footer-bottom {
-  margin-top: 1.5rem; display: flex; justify-content: space-between;
-  align-items: center; color: var(--muted); font-size: 0.8rem;
-  flex-wrap: wrap; gap: 1rem;
+  margin-top: 1.5rem; display: flex; justify-content: center;
+  align-items: center; text-align: center; color: var(--muted); font-size: 0.8rem;
+  flex-wrap: wrap; gap: 1rem; width: 100%;
 }
-@media(max-width: 600px) { .footer-bottom { flex-direction: column; text-align: center; } }
-
-.footer-credit a { 
-  color: var(--white); text-decoration: none; border-bottom: 1px solid transparent;
-  transition: all 0.3s;
+.footer-copy {
+  text-align: center; width: 100%;
 }
-.footer-credit a:hover { color: var(--gold); border-bottom-color: var(--gold); }
+.footer-copy a { 
+  color: var(--gold); text-decoration: none; font-weight: bold;
+  transition: all 0.2s ease;
+}
+.footer-copy a:hover { color: #fff; text-decoration: underline; }
 
 /* ANIMATIONS */
 @keyframes fadeInUpBlur {
