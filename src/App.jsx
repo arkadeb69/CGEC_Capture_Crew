@@ -1172,7 +1172,7 @@ If you'd rather not receive these club updates, you can unsubscribe here: ${unsu
             { id: "verify", label: "Verify" },
             { id: "join", label: "Join" },
             { id: "contributors", label: "Contributors" },
-            { id: "privacy-policy", label: "Privacy Policy" },
+            { id: "contact", label: "Contact Us" },
             { id: "about", label: "About Us" },
             { id: "admin", label: "Admin Console" }
           ].map((item) => {
