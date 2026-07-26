@@ -22,7 +22,7 @@ export default function FrameNotFoundPage() {
       <div className="vignette"></div>
 
       <div className="brand">
-        <b>Capture</b> Crew
+        Capture <span>Crew</span>
       </div>
 
       <div className="stage">

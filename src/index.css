@@ -2547,16 +2547,15 @@ section { padding: 7rem 0; }
   left: 50%;
   transform: translateX(-50%);
   z-index: 5;
-  font-family: 'Playfair Display', serif;
-  font-style: italic;
-  font-size: 14px;
-  letter-spacing: 0.05em;
-  color: var(--paper-dim);
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  letter-spacing: 0.15em;
+  color: var(--white);
+  font-weight: 300;
+  white-space: nowrap;
 }
-.frame-404-wrapper .brand b {
-  font-style: normal;
-  color: var(--paper);
-  font-weight: 600;
+.frame-404-wrapper .brand span {
+  color: var(--gold);
 }
 
 @media (max-width:560px){
