@@ -5597,7 +5597,9 @@ function ContributorsPage({ shuffledMembers, expandedMembers, setExpandedMembers
                   {m.img ? <img src={getOptimizedUrl(m.img)} alt={m.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : '📸'}
                 </div>
                 <div className="team-name" style={{ fontSize: '0.95rem' }}>{m.name}</div>
-                <div className="team-role" style={{ fontSize: '0.65rem', color: 'var(--gold)', marginBottom: '0.3rem' }}>{m.role || 'Member'}</div>
+                {m.role && m.role !== 'Member' && (
+                  <div className="team-role" style={{ fontSize: '0.65rem', color: 'var(--gold)', marginBottom: '0.3rem' }}>{m.role}</div>
+                )}
                 <div className="team-dept" style={{ fontSize: '0.65rem', opacity: 0.8 }}>{m.dept}</div>
                 <div className="team-dept" style={{ fontSize: '0.65rem', opacity: 0.6, marginTop: '2px' }}>{m.year}</div>
               </div>
