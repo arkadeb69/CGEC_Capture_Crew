@@ -1311,11 +1311,15 @@ If you'd rather not receive these club updates, you can unsubscribe here: ${unsu
           <p className="hero-tagline">{siteConfig.heroTagline}</p>
 
 
-          <button className="hero-cta" onClick={() => {
-            navigate('/events-gallery');
-            setTimeout(() => window.scrollTo({ top: 0, behavior: "smooth" }), 100);
+          <button className="uiux-image-btn" onClick={() => {
+            navigate('/events');
+            setTimeout(() => {
+              const el = document.querySelector('.timeline-section-sticky-wrapper');
+              if (el) el.scrollIntoView({ behavior: 'smooth' });
+            }, 100);
           }}>
-            Explore the Events Gallery
+            <img src="/uiux_button.png" alt="Explore Events Gallery" className="uiux-btn-img" />
+            <span className="uiux-btn-shine"></span>
           </button>
         </div>
 
@@ -1607,8 +1611,15 @@ If you'd rather not receive these club updates, you can unsubscribe here: ${unsu
                 </div>
               </div>
 
-              <button className="event-dive-btn" style={{ margin: 0, background: 'var(--gold)', color: 'var(--ink)', border: 'none', fontWeight: 'bold' }}>
-                Explore CC Events
+              <button className="uiux-image-btn" onClick={() => {
+                navigate('/events');
+                setTimeout(() => {
+                  const el = document.querySelector('.timeline-section-sticky-wrapper');
+                  if (el) el.scrollIntoView({ behavior: 'smooth' });
+                }, 100);
+              }}>
+                <img src="/uiux_button.png" alt="Explore Events Gallery" className="uiux-btn-img" />
+                <span className="uiux-btn-shine"></span>
               </button>
             </div>
           </div>

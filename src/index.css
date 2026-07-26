@@ -3562,6 +3562,74 @@ section { padding: 7rem 0; }
   cursor: wait;
 }
 
+/* UIUX IMAGE BUTTON WITH INSIDE MOUSE HOVER ANIMATION */
+.uiux-image-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  outline: none;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(201, 169, 110, 0.3);
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.35s ease;
+  max-width: 320px;
+  width: 100%;
+  margin-top: 1rem;
+}
+
+.uiux-btn-img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 18px;
+  object-fit: contain;
+  transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), filter 0.4s ease;
+  transform: scale(1.001);
+}
+
+.uiux-btn-shine {
+  position: absolute;
+  top: 0;
+  left: -120%;
+  width: 80%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.3) 50%,
+    transparent 100%
+  );
+  transform: skewX(-25deg);
+  transition: left 0.75s ease-in-out;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* INSIDE MOUSE HOVER ANIMATIONS */
+.uiux-image-btn:hover {
+  transform: translateY(-4px) scale(1.03);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.7), 0 0 24px 3px rgba(201, 169, 110, 0.6);
+}
+
+.uiux-image-btn:hover .uiux-btn-img {
+  transform: scale(1.05);
+  filter: brightness(1.1) contrast(1.03);
+}
+
+.uiux-image-btn:hover .uiux-btn-shine {
+  left: 140%;
+}
+
+.uiux-image-btn:active {
+  transform: translateY(0) scale(0.97);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4), 0 0 10px rgba(201, 169, 110, 0.3);
+}
+
 
 
 
