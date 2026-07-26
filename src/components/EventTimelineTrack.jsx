@@ -146,7 +146,7 @@ export default function EventTimelineTrack({ events, staticIcons, navigate, gene
         <div className="timeline-header-wrap fade-in">
           <div className="section-label">✧ Interactive Journey</div>
           <h3 className="timeline-title">Event <em>Timeline Track</em></h3>
-          <p className="timeline-sub">Scroll down to move along the timeline track and discover our college events.</p>
+          <p className="timeline-sub">Scroll down to move along the timeline track and discover our college events — click <strong>DIVE IN</strong> to get back to the event's memories.</p>
         </div>
 
         {isMobile ? (
