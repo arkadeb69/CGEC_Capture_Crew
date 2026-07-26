@@ -2912,45 +2912,29 @@ section { padding: 7rem 0; }
   overflow: hidden;
 }
 
-/* RETRO DATE BADGE INSIDE CARD */
+/* DATE / SEASON BADGE INSIDE CARD */
 .window-date-badge {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 3px 7px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 3px 9px;
   border-radius: 6px;
   width: fit-content;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
-.date-day {
-  font-family: 'Playfair Display', serif;
-  font-size: 1.3rem;
-  font-weight: 700;
-  color: var(--white);
-  line-height: 1;
-}
-
-.date-month-wrap {
-  display: flex;
-  flex-direction: column;
-}
-
-.date-month {
+.window-date-badge .date-text {
   font-family: 'Space Mono', monospace;
-  font-size: 0.62rem;
+  font-size: 0.68rem;
   font-weight: 700;
   color: var(--gold);
-  letter-spacing: 0.05em;
-  line-height: 1;
-}
-
-.date-year {
-  font-size: 0.58rem;
-  color: var(--muted);
-  line-height: 1;
-  margin-top: 1px;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .window-title-row {

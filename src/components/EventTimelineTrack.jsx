@@ -1,44 +1,5 @@
 import { useState, useEffect, useRef } from "react";
 
-function getOrdinalSuffix(n) {
-  const num = parseInt(n, 10);
-  if (isNaN(num)) return n;
-  const s = ["th", "st", "nd", "rd"];
-  const v = num % 100;
-  return num + (s[(v - 20) % 10] || s[v] || s[0]);
-}
-
-function parseEventDate(dateStr, calendarYear) {
-  if (!dateStr) return { day: '1st', month: 'AUG', year: calendarYear || '2026' };
-  const str = dateStr.toString().trim();
-  const parts = str.split(/\s+/);
-  
-  let dayNum = '1';
-  let month = 'JAN';
-  let year = calendarYear || '2026';
-
-  if (parts.length >= 3) {
-    dayNum = parts[0].replace(/[^0-9]/g, '') || '1';
-    month = parts[1].substring(0, 3).toUpperCase();
-    year = parts[2] || calendarYear || '2026';
-  } else if (parts.length === 2) {
-    if (/^[0-9]+/.test(parts[0])) {
-      dayNum = parts[0].replace(/[^0-9]/g, '') || '1';
-      month = parts[1].substring(0, 3).toUpperCase();
-    } else {
-      month = parts[0].substring(0, 3).toUpperCase();
-      year = parts[1] || calendarYear || '2026';
-      dayNum = '1';
-    }
-  } else {
-    month = str.substring(0, 3).toUpperCase();
-    year = calendarYear || '2026';
-  }
-
-  const dayWithOrdinal = getOrdinalSuffix(dayNum);
-  return { day: dayWithOrdinal, month, year };
-}
-
 export default function EventTimelineTrack({ events, staticIcons, navigate, generateSlug, siteConfig }) {
   const sectionRef = useRef(null);
   const mobileWrapRef = useRef(null);
@@ -52,7 +13,7 @@ export default function EventTimelineTrack({ events, staticIcons, navigate, gene
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Events list sorted latest first
+  // Events list sorted by order (latest first)
   const displayEvents = [...events].sort((a, b) => (a.order || 99) - (b.order || 99));
 
   // Add Universal Archive as final destination on the track
@@ -64,7 +25,7 @@ export default function EventTimelineTrack({ events, staticIcons, navigate, gene
       name: 'Event Archive',
       subtitle: 'Universal Gallery',
       desc: 'Explore every capture from every event we\'ve ever hosted, all in one immersive timeline.',
-      date: 'FULL ARCHIVE 2026',
+      date: 'FULL ARCHIVE',
       color: '#C9A96E',
       emoji: '📂',
       highlight: '✨ IMMERSIVE VIEW'
@@ -150,7 +111,6 @@ export default function EventTimelineTrack({ events, staticIcons, navigate, gene
     Math.floor(scrollProgress * totalItems),
     totalItems - 1
   );
-  const currentActiveItem = allTrackItems[Math.max(0, activeIndex)];
 
   // Card spacing & translation for desktop sticky horizontal track
   const cardSpacing = 360;
@@ -184,7 +144,6 @@ export default function EventTimelineTrack({ events, staticIcons, navigate, gene
               {allTrackItems.map((item, idx) => {
                 const isActive = idx === mobileActiveIndex;
                 const isPassed = idx <= mobileActiveIndex;
-                const dateParsed = parseEventDate(item.date);
                 const logoUrl = (item.iconUrl && item.iconUrl.trim().startsWith('http')) 
                   ? item.iconUrl.trim() 
                   : (staticIcons && staticIcons[item.id] && staticIcons[item.id].trim().startsWith('http') ? staticIcons[item.id].trim() : null);
@@ -207,13 +166,9 @@ export default function EventTimelineTrack({ events, staticIcons, navigate, gene
                       </div>
                       
                       <div className="window-body">
-                        {item.type !== 'archive' && (
+                        {item.type !== 'archive' && item.date && (
                           <div className="window-date-badge">
-                            <div className="date-day">{dateParsed.day}</div>
-                            <div className="date-month-wrap">
-                              <div className="date-month">{dateParsed.month}</div>
-                              <div className="date-year">{dateParsed.year}</div>
-                            </div>
+                            <span className="date-text">🗓️ {item.date}</span>
                           </div>
                         )}
 
@@ -298,7 +253,6 @@ export default function EventTimelineTrack({ events, staticIcons, navigate, gene
                   const isActive = idx === activeIndex;
                   const isPassed = idx <= activeIndex;
                   const isNear = Math.abs(idx - activeIndex) <= 3;
-                  const dateParsed = parseEventDate(item.date);
                   const logoUrl = (item.iconUrl && item.iconUrl.trim().startsWith('http')) 
                     ? item.iconUrl.trim() 
                     : (staticIcons && staticIcons[item.id] && staticIcons[item.id].trim().startsWith('http') ? staticIcons[item.id].trim() : null);
@@ -323,13 +277,9 @@ export default function EventTimelineTrack({ events, staticIcons, navigate, gene
                         </div>
                         
                         <div className="window-body">
-                          {item.type !== 'archive' && (
+                          {item.type !== 'archive' && item.date && (
                             <div className="window-date-badge">
-                              <div className="date-day">{dateParsed.day}</div>
-                              <div className="date-month-wrap">
-                                <div className="date-month">{dateParsed.month}</div>
-                                <div className="date-year">{dateParsed.year}</div>
-                              </div>
+                              <span className="date-text">🗓️ {item.date}</span>
                             </div>
                           )}
 
