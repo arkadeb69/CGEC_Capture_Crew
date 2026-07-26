@@ -186,13 +186,15 @@ export default function EventTimelineTrack({ events, staticIcons, navigate, gene
                       </div>
                       
                       <div className="window-body">
-                        <div className="window-date-badge">
-                          <div className="date-day">{dateParsed.day}</div>
-                          <div className="date-month-wrap">
-                            <div className="date-month">{dateParsed.month}</div>
-                            <div className="date-year">{dateParsed.year}</div>
+                        {item.type !== 'archive' && (
+                          <div className="window-date-badge">
+                            <div className="date-day">{dateParsed.day}</div>
+                            <div className="date-month-wrap">
+                              <div className="date-month">{dateParsed.month}</div>
+                              <div className="date-year">{dateParsed.year}</div>
+                            </div>
                           </div>
-                        </div>
+                        )}
 
                         <div className="window-title-row">
                           {logoUrl ? (
@@ -224,7 +226,7 @@ export default function EventTimelineTrack({ events, staticIcons, navigate, gene
                               }
                             }}
                           >
-                            {item.type === 'archive' ? 'Open Archive 📂' : (item.comingSoon ? 'Coming Soon ⏳' : 'DIVE IN 🚀')}
+                            {item.type === 'archive' ? 'Open Archive' : (item.comingSoon ? 'Coming Soon' : 'DIVE IN')}
                           </button>
                         </div>
                       </div>
@@ -300,13 +302,15 @@ export default function EventTimelineTrack({ events, staticIcons, navigate, gene
                         </div>
                         
                         <div className="window-body">
-                          <div className="window-date-badge">
-                            <div className="date-day">{dateParsed.day}</div>
-                            <div className="date-month-wrap">
-                              <div className="date-month">{dateParsed.month}</div>
-                              <div className="date-year">{dateParsed.year}</div>
+                          {item.type !== 'archive' && (
+                            <div className="window-date-badge">
+                              <div className="date-day">{dateParsed.day}</div>
+                              <div className="date-month-wrap">
+                                <div className="date-month">{dateParsed.month}</div>
+                                <div className="date-year">{dateParsed.year}</div>
+                              </div>
                             </div>
-                          </div>
+                          )}
 
                           <div className="window-title-row">
                             {logoUrl ? (
@@ -338,7 +342,7 @@ export default function EventTimelineTrack({ events, staticIcons, navigate, gene
                                 }
                               }}
                             >
-                              {item.type === 'archive' ? 'Open Archive 📂' : (item.comingSoon ? 'Coming Soon ⏳' : 'DIVE IN 🚀')}
+                              {item.type === 'archive' ? 'Open Archive' : (item.comingSoon ? 'Coming Soon' : 'DIVE IN')}
                             </button>
                           </div>
                         </div>
