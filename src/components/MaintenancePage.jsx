@@ -82,7 +82,7 @@ export default function MaintenancePage({ config, siteConfig }) {
           <p style={{ opacity: 0.7, fontSize: '0.9rem', marginBottom: '1rem' }}>Contact us at <a href="mailto:contact@capturecrew.site" style={{ color: 'var(--gold)', textDecoration: 'none' }}>contact@capturecrew.site</a></p>
           <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem' }}>
             {siteConfig?.instaLink && <a href={siteConfig.instaLink} target="_blank" rel="noreferrer" style={{ color: 'var(--white)', opacity: 0.8, textDecoration: 'none' }}>Instagram</a>}
-            {siteConfig?.waLink && <a href={siteConfig.waLink} target="_blank" rel="noreferrer" style={{ color: 'var(--white)', opacity: 0.8, textDecoration: 'none' }}>WhatsApp</a>}
+            {(siteConfig?.linkedinLink || siteConfig?.waLink) && <a href={siteConfig?.linkedinLink || "https://www.linkedin.com/company/cgec-capture-crew/"} target="_blank" rel="noreferrer" style={{ color: 'var(--white)', opacity: 0.8, textDecoration: 'none' }}>LinkedIn</a>}
             {siteConfig?.fbLink && <a href={siteConfig.fbLink} target="_blank" rel="noreferrer" style={{ color: 'var(--white)', opacity: 0.8, textDecoration: 'none' }}>Facebook</a>}
           </div>
         </div>

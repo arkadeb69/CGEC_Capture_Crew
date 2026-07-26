@@ -540,6 +540,7 @@ export default function App() {
     heroTitle: "CAPTURING MOMENTS,\nCREATING MEMORIES.",
     heroTagline: "Exploring the World through the CGEC lens",
     instaLink: "https://instagram.com/cgec_capture_crew?igshid=NGVhN2U2NjQ0Yg==",
+    linkedinLink: "https://www.linkedin.com/company/cgec-capture-crew/",
     waLink: "https://chat.whatsapp.com/BSV9q40j6EN2B5sQz47eYK?mode=gi_t",
     fbLink: "https://www.facebook.com/profile.php?id=61551537531538&mibextid=V3Yony",
     activeYear: "2026",
@@ -2041,7 +2042,7 @@ If you'd rather not receive these club updates, you can unsubscribe here: ${unsu
 
             <div className="footer-socials">
               <a href={siteConfig.instaLink} target="_blank" rel="noreferrer" className="social-icon">Instagram</a>
-              <a href={siteConfig.waLink} target="_blank" rel="noreferrer" className="social-icon">WhatsApp</a>
+              <a href={siteConfig.linkedinLink || "https://www.linkedin.com/company/cgec-capture-crew/"} target="_blank" rel="noreferrer" className="social-icon">LinkedIn</a>
               <a href={siteConfig.fbLink} target="_blank" rel="noreferrer" className="social-icon">Facebook</a>
             </div>
           </div>
@@ -3576,8 +3577,8 @@ function AdminDashboard({ user, adminData, archiveConfig, themeId, coverPhotos, 
                       <input className="form-input" value={siteForm.instaLink} onChange={e => setSiteForm({...siteForm, instaLink: e.target.value})} />
                     </div>
                     <div>
-                      <label style={{ fontSize: '0.7rem', opacity: 0.6 }}>WhatsApp Link</label>
-                      <input className="form-input" value={siteForm.waLink} onChange={e => setSiteForm({...siteForm, waLink: e.target.value})} />
+                      <label style={{ fontSize: '0.7rem', opacity: 0.6 }}>LinkedIn Link</label>
+                      <input className="form-input" value={siteForm.linkedinLink ?? "https://www.linkedin.com/company/cgec-capture-crew/"} onChange={e => setSiteForm({...siteForm, linkedinLink: e.target.value})} />
                     </div>
                     <div>
                       <label style={{ fontSize: '0.7rem', opacity: 0.6 }}>Facebook Link</label>
