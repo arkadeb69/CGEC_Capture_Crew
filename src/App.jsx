@@ -6444,20 +6444,20 @@ function ContactUsPage() {
 
   return (
     <section className="verify-section" style={{ minHeight: '80vh', padding: '8rem 0' }}>
-      <div className="container" style={{ maxWidth: '900px' }}>
-        <div className="admin-modal glass-form fade-in visible legal-content contact-page-card" style={{ padding: '4rem', borderRadius: '24px', border: '1px solid var(--border)', background: 'rgba(255,255,255,0.02)' }}>
+      <div className="container" style={{ maxWidth: '900px', padding: '0 1rem' }}>
+        <div className="admin-modal glass-form fade-in visible legal-content contact-page-card">
           
           <div className="section-label" style={{ textAlign: 'center' }}>✧ Get in Touch</div>
           <h1 style={{ marginBottom: '1.5rem', fontSize: '2.5rem', textAlign: 'center' }}>Contact <em style={{ color: 'var(--gold)', fontStyle: 'normal' }}>Us</em></h1>
           
-          <p style={{ fontSize: '1.1rem', lineHeight: '1.8', marginBottom: '2.5rem', color: '#ccc', textAlign: 'center' }}>
+          <p style={{ fontSize: '1.05rem', lineHeight: '1.8', marginBottom: '2.5rem', color: '#ccc', textAlign: 'center' }}>
             We’d love to hear from you. Whether you have questions, suggestions, collaboration ideas, or need support, feel free to reach out to us.
           </p>
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '2rem', marginBottom: '3rem' }}>
-            <div style={{ background: 'rgba(201, 169, 110, 0.05)', padding: '2rem', borderRadius: '16px', border: '1px solid rgba(201, 169, 110, 0.2)' }}>
+            <div className="contact-info-box">
               <h2 style={{ fontSize: '1.5rem', marginBottom: '1rem', color: 'var(--gold)' }}>Contact Info</h2>
-              <ul style={{ listStyle: 'none', padding: 0, margin: 0, color: '#ccc', lineHeight: '2' }}>
+              <ul className="contact-info-list">
                 <li>📍 <strong>Organization:</strong> Capture Crew — Photography Club of CGEC</li>
                 <li>🌐 <strong>Website:</strong> <a href="https://www.capturecrew.site/" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--gold)' }}>https://www.capturecrew.site/</a></li>
                 <li>📧 <strong>Email:</strong> <a href="mailto:contact@capturecrew.site" style={{ color: 'var(--gold)' }}>contact@capturecrew.site</a></li>
@@ -6470,8 +6470,8 @@ function ContactUsPage() {
               <p style={{ color: '#ccc', fontSize: '0.95rem' }}>For urgent matters related to events, contributions, or technical issues, please mention <strong>“URGENT”</strong> in your subject line.</p>
             </div>
             
-            <div>
-              <h2 style={{ fontSize: '1.5rem', marginBottom: '1rem', color: 'var(--gold)' }}>Send Us a Message</h2>
+            <div className="contact-form-box">
+              <h2 style={{ fontSize: '1.5rem', marginBottom: '1.2rem', color: 'var(--gold)' }}>Send Us a Message</h2>
               <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
                 <div>
                   <label style={{ display: 'block', marginBottom: '0.5rem', color: '#ccc', fontSize: '0.9rem' }}>Name <span style={{ color: 'var(--gold)' }}>*</span></label>
@@ -6483,7 +6483,7 @@ function ContactUsPage() {
                     required
                     placeholder="Enter your full name" 
                     className="form-input" 
-                    style={{ width: '100%', padding: '1rem', background: 'rgba(0,0,0,0.5)', border: '1px solid var(--border)', borderRadius: '12px', color: '#fff' }}
+                    style={{ width: '100%', padding: '1rem', background: 'rgba(0,0,0,0.5)', border: '1px solid var(--border)', borderRadius: '12px', color: '#fff', boxSizing: 'border-box' }}
                   />
                 </div>
                 <div>
@@ -6496,7 +6496,7 @@ function ContactUsPage() {
                     required
                     placeholder="Enter your email address" 
                     className="form-input" 
-                    style={{ width: '100%', padding: '1rem', background: 'rgba(0,0,0,0.5)', border: '1px solid var(--border)', borderRadius: '12px', color: '#fff' }}
+                    style={{ width: '100%', padding: '1rem', background: 'rgba(0,0,0,0.5)', border: '1px solid var(--border)', borderRadius: '12px', color: '#fff', boxSizing: 'border-box' }}
                   />
                 </div>
                 <div>
@@ -6509,7 +6509,7 @@ function ContactUsPage() {
                     required
                     placeholder="Enter subject" 
                     className="form-input" 
-                    style={{ width: '100%', padding: '1rem', background: 'rgba(0,0,0,0.5)', border: '1px solid var(--border)', borderRadius: '12px', color: '#fff' }}
+                    style={{ width: '100%', padding: '1rem', background: 'rgba(0,0,0,0.5)', border: '1px solid var(--border)', borderRadius: '12px', color: '#fff', boxSizing: 'border-box' }}
                   />
                 </div>
                 <div>
@@ -6521,7 +6521,7 @@ function ContactUsPage() {
                     required
                     placeholder="Write your message here" 
                     className="form-input" 
-                    style={{ width: '100%', padding: '1rem', background: 'rgba(0,0,0,0.5)', border: '1px solid var(--border)', borderRadius: '12px', color: '#fff', minHeight: '150px', resize: 'vertical', fontFamily: 'inherit' }}
+                    style={{ width: '100%', padding: '1rem', background: 'rgba(0,0,0,0.5)', border: '1px solid var(--border)', borderRadius: '12px', color: '#fff', minHeight: '150px', resize: 'vertical', fontFamily: 'inherit', boxSizing: 'border-box' }}
                   />
                 </div>
                 
@@ -6532,7 +6532,8 @@ function ContactUsPage() {
                     background: status.type === 'success' ? 'rgba(0, 255, 150, 0.1)' : status.type === 'error' ? 'rgba(255, 77, 77, 0.1)' : 'rgba(255, 255, 255, 0.1)', 
                     color: status.type === 'success' ? '#00ff96' : status.type === 'error' ? '#ff4d4d' : '#fff',
                     border: `1px solid ${status.type === 'success' ? 'rgba(0, 255, 150, 0.3)' : status.type === 'error' ? 'rgba(255, 77, 77, 0.3)' : 'rgba(255, 255, 255, 0.3)'}`,
-                    fontSize: '0.9rem'
+                    fontSize: '0.9rem',
+                    textAlign: 'center'
                   }}>
                     {status.message}
                   </div>
