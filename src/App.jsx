@@ -1190,7 +1190,9 @@ If you'd rather not receive these club updates, you can unsubscribe here: ${unsu
                     // Don't close mobile menu immediately if it has dropdown, to allow clicking, unless handled by CSS.
                     // Actually, clicking the main link should navigate and close it.
                     setMobileMenuOpen(false);
-                    setTimeout(() => window.scrollTo({ top: 0, behavior: "smooth" }), 100);
+                    if (!sessionStorage.getItem("cc_events_timeline_scroll")) {
+                      setTimeout(() => window.scrollTo({ top: 0, behavior: "smooth" }), 100);
+                    }
                   }}
                   style={{ textDecoration: 'none', color: 'inherit' }}
                 >

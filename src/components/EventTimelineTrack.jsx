@@ -69,6 +69,30 @@ export default function EventTimelineTrack({ events, staticIcons, navigate, gene
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // Restore scroll position when returning from an event detail view
+  useEffect(() => {
+    const savedPos = sessionStorage.getItem("cc_events_timeline_scroll");
+    if (savedPos) {
+      const targetY = parseFloat(savedPos);
+      
+      const restoreScroll = () => {
+        window.scrollTo({ top: targetY, behavior: 'instant' });
+      };
+
+      restoreScroll();
+      const t1 = setTimeout(restoreScroll, 50);
+      const t2 = setTimeout(() => {
+        restoreScroll();
+        sessionStorage.removeItem("cc_events_timeline_scroll");
+      }, 180);
+
+      return () => {
+        clearTimeout(t1);
+        clearTimeout(t2);
+      };
+    }
+  }, []);
+
   const totalItems = allTrackItems.length;
   const activeIndex = Math.min(
     Math.floor(scrollProgress * totalItems),
@@ -153,6 +177,7 @@ export default function EventTimelineTrack({ events, staticIcons, navigate, gene
                           disabled={!isActive}
                           onClick={() => {
                             if (!isActive) return;
+                            sessionStorage.setItem("cc_events_timeline_scroll", window.scrollY.toString());
                             if (item.type === 'archive') {
                               navigate('/events-gallery');
                             } else if (item.comingSoon) {
@@ -265,6 +290,7 @@ export default function EventTimelineTrack({ events, staticIcons, navigate, gene
                               disabled={!isActive}
                               onClick={() => {
                                 if (!isActive) return;
+                                sessionStorage.setItem("cc_events_timeline_scroll", window.scrollY.toString());
                                 if (item.type === 'archive') {
                                   navigate('/events-gallery');
                                 } else if (item.comingSoon) {
