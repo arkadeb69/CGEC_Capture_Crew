@@ -2976,7 +2976,17 @@ section { padding: 7rem 0; }
   font-family: 'Inter', sans-serif;
 }
 
-.window-dive-btn:hover {
+.window-dive-btn:disabled,
+.timeline-node-card-wrap:not(.active) .window-dive-btn,
+.mobile-card:not(.active-card) .window-dive-btn {
+  opacity: 0.35 !important;
+  pointer-events: none !important;
+  cursor: not-allowed !important;
+  transform: none !important;
+  filter: grayscale(60%);
+}
+
+.window-dive-btn:not(:disabled):hover {
   transform: translateY(-2px);
   opacity: 0.9;
 }

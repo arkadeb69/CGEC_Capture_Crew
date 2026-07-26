@@ -102,12 +102,6 @@ export default function EventTimelineTrack({ events, staticIcons, navigate, gene
                 className="mobile-track-progress" 
                 style={{ height: `${scrollProgress * 100}%` }}
               ></div>
-              <div 
-                className="mobile-car-marker" 
-                style={{ top: `${scrollProgress * 100}%` }}
-              >
-                <div className="car-date-badge">{currentActiveItem?.date || "2026"}</div>
-              </div>
             </div>
 
             <div className="mobile-cards-list">
@@ -156,7 +150,9 @@ export default function EventTimelineTrack({ events, staticIcons, navigate, gene
                         <button 
                           className="window-dive-btn"
                           style={{ background: itemColor }}
+                          disabled={!isActive}
                           onClick={() => {
+                            if (!isActive) return;
                             if (item.type === 'archive') {
                               navigate('/events-gallery');
                             } else if (item.comingSoon) {
@@ -187,14 +183,6 @@ export default function EventTimelineTrack({ events, staticIcons, navigate, gene
                   className="track-line-fill" 
                   style={{ width: `${translateX + 180}px` }}
                 ></div>
-
-                {/* MOVING DATE MARKER */}
-                <div 
-                  className="moving-vehicle-box"
-                  style={{ left: `${translateX + 120}px` }}
-                >
-                  <div className="vehicle-date-tag">{currentActiveItem?.date || "2026"}</div>
-                </div>
 
                 {/* STATION NODES ON THE LINE */}
                 {allTrackItems.map((item, idx) => {
@@ -274,7 +262,9 @@ export default function EventTimelineTrack({ events, staticIcons, navigate, gene
                             <button 
                               className="window-dive-btn"
                               style={{ background: itemColor }}
+                              disabled={!isActive}
                               onClick={() => {
+                                if (!isActive) return;
                                 if (item.type === 'archive') {
                                   navigate('/events-gallery');
                                 } else if (item.comingSoon) {
