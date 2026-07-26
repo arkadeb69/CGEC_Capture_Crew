@@ -1018,12 +1018,31 @@ If you'd rather not receive these club updates, you can unsubscribe here: ${unsu
     expandedMembers
   ]);
 
-  // Lightbox esc
+  // Lightbox keyboard navigation (Esc, ArrowLeft, ArrowRight)
   useEffect(() => {
-    const fn = e => e.key === "Escape" && setLightboxItem(null);
-    window.addEventListener("keydown", fn);
-    return () => window.removeEventListener("keydown", fn);
-  }, []);
+    const handleKeyDown = (e) => {
+      if (!lightboxItem) return;
+      if (e.key === "Escape") {
+        setLightboxItem(null);
+      } else if (e.key === "ArrowLeft" && lightboxItem.playlist && lightboxItem.playlist.length > 1) {
+        const prevIdx = (lightboxItem.currentIndex - 1 + lightboxItem.playlist.length) % lightboxItem.playlist.length;
+        setLightboxItem({
+          ...lightboxItem.playlist[prevIdx],
+          playlist: lightboxItem.playlist,
+          currentIndex: prevIdx
+        });
+      } else if (e.key === "ArrowRight" && lightboxItem.playlist && lightboxItem.playlist.length > 1) {
+        const nextIdx = (lightboxItem.currentIndex + 1) % lightboxItem.playlist.length;
+        setLightboxItem({
+          ...lightboxItem.playlist[nextIdx],
+          playlist: lightboxItem.playlist,
+          currentIndex: nextIdx
+        });
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [lightboxItem]);
 
   // Auth Listener with Admin Check
   useEffect(() => {
@@ -2021,6 +2040,42 @@ If you'd rather not receive these club updates, you can unsubscribe here: ${unsu
       {/* LIGHTBOX */}
       <div className={`lightbox ${lightboxItem ? "open" : ""}`} onClick={() => setLightboxItem(null)}>
         <button className="lightbox-close" onClick={() => setLightboxItem(null)}>✕</button>
+        
+        {lightboxItem && lightboxItem.playlist && lightboxItem.playlist.length > 1 && (
+          <>
+            <button 
+              className="lightbox-nav-btn prev"
+              onClick={(e) => {
+                e.stopPropagation();
+                const prevIdx = (lightboxItem.currentIndex - 1 + lightboxItem.playlist.length) % lightboxItem.playlist.length;
+                setLightboxItem({
+                  ...lightboxItem.playlist[prevIdx],
+                  playlist: lightboxItem.playlist,
+                  currentIndex: prevIdx
+                });
+              }}
+              aria-label="Previous photo"
+            >
+              ‹
+            </button>
+            <button 
+              className="lightbox-nav-btn next"
+              onClick={(e) => {
+                e.stopPropagation();
+                const nextIdx = (lightboxItem.currentIndex + 1) % lightboxItem.playlist.length;
+                setLightboxItem({
+                  ...lightboxItem.playlist[nextIdx],
+                  playlist: lightboxItem.playlist,
+                  currentIndex: nextIdx
+                });
+              }}
+              aria-label="Next photo"
+            >
+              ›
+            </button>
+          </>
+        )}
+
         {lightboxItem && (
           <div className="lightbox-content" onClick={e => e.stopPropagation()}>
             <img
@@ -2036,6 +2091,11 @@ If you'd rather not receive these club updates, you can unsubscribe here: ${unsu
                 boxShadow: "0 20px 50px rgba(0,0,0,0.5)"
               }}
             />
+            {lightboxItem.playlist && lightboxItem.playlist.length > 1 && (
+              <div className="lightbox-counter">
+                {lightboxItem.currentIndex + 1} / {lightboxItem.playlist.length}
+              </div>
+            )}
             <div className="lightbox-title">{lightboxItem.title}</div>
             {(lightboxItem.photographer || lightboxItem.dept || lightboxItem.year) && (
               <div className="lightbox-credit">
@@ -4766,11 +4826,47 @@ function EventPage({ event, liveEvents, onClose, setLightboxItem, isGlobal, arch
 
   const groupedEvents = getGroupedEvents();
 
+  // Build global playlist for Universal Archive view across all listed events in exact order
+  const globalPlaylist = isGlobal ? (() => {
+    const list = [];
+    groupedEvents.forEach(ev => {
+      const evPhotos = (
+        liveEvents[ev.id] && (
+          Array.isArray(liveEvents[ev.id]) ? liveEvents[ev.id].length > 0 : (
+            (liveEvents[ev.id].general && liveEvents[ev.id].general.length > 0) ||
+            (liveEvents[ev.id].prize && liveEvents[ev.id].prize.length > 0) ||
+            (liveEvents[ev.id].winners && liveEvents[ev.id].winners.length > 0)
+          )
+        )
+      ) ? flattenPhotos(liveEvents[ev.id]) : flattenPhotos(STATIC_EVENT_PHOTOS[ev.id]);
+
+      evPhotos.forEach(p => {
+        list.push({
+          url: p,
+          title: ev.name,
+          photographer: "Capture Crew",
+          dept: ev.date || ev.subtitle || "Event Archive",
+          year: ev.calendarYear || "2026"
+        });
+      });
+    });
+    return list;
+  })() : null;
+
+  // Single event playlist
+  const eventPlaylist = !isGlobal ? photos.map(p => ({
+    url: p,
+    title: event.name,
+    photographer: "Capture Crew",
+    dept: event.subtitle || "Highlights",
+    year: event.calendarYear || "2026"
+  })) : null;
+
   return (
     <div className="event-page-overlay" style={{ '--c': event.color || 'var(--gold)' }}>
       <div className="container" style={{ paddingBottom: '8rem' }}>
         <header className="event-page-header">
-          <button className="back-btn" onClick={onClose}><ArrowLeft /> Back to Home</button>
+          <button className="back-btn" onClick={onClose}><ArrowLeft /> Back to Events</button>
           
           <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', marginTop: '1rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
             {!isGlobal && (logoUrl ? (
@@ -4841,6 +4937,7 @@ function EventPage({ event, liveEvents, onClose, setLightboxItem, isGlobal, arch
                   onClose={onClose} 
                   eventYear={ev.calendarYear || "2026"}
                   isMobile={isMobile}
+                  playlist={globalPlaylist}
                 />
               </div>
             ))}
@@ -4850,7 +4947,16 @@ function EventPage({ event, liveEvents, onClose, setLightboxItem, isGlobal, arch
           </div>
         ) : (
           <>
-            <EventSection title="Gallery" subtitle={event.subtitle || "Highlights"} photos={photos} setLightboxItem={setLightboxItem} onClose={onClose} eventYear={event.calendarYear || "2026"} isMobile={isMobile} />
+            <EventSection 
+              title="Gallery" 
+              subtitle={event.subtitle || "Highlights"} 
+              photos={photos} 
+              setLightboxItem={setLightboxItem} 
+              onClose={onClose} 
+              eventYear={event.calendarYear || "2026"} 
+              isMobile={isMobile} 
+              playlist={eventPlaylist}
+            />
           </>
         )}
       </div>
@@ -4858,7 +4964,7 @@ function EventPage({ event, liveEvents, onClose, setLightboxItem, isGlobal, arch
   );
 }
 
-function EventSection({ title, subtitle, photos, setLightboxItem, onClose, eventYear, isMobile }) {
+function EventSection({ title, subtitle, photos, setLightboxItem, onClose, eventYear, isMobile, playlist }) {
   const [searchTerm, setSearchTerm] = useState("");
   if (!photos || photos.length === 0) return null;
 
@@ -4900,13 +5006,27 @@ function EventSection({ title, subtitle, photos, setLightboxItem, onClose, event
             key={`${p}-${i}`} 
             className="gallery-grid-item" 
             style={{ "--delay": `${(i % 12) * 0.05}s` }}
-            onClick={() => setLightboxItem({
-              url: p,
-              title: title,
-              photographer: "Capture Crew",
-              dept: subtitle,
-              year: eventYear || "2026"
-            })}
+            onClick={() => {
+              let itemIndex = 0;
+              if (playlist && playlist.length > 0) {
+                const foundIdx = playlist.findIndex(item => item.url === p);
+                if (foundIdx !== -1) itemIndex = foundIdx;
+              }
+
+              const activeItem = (playlist && playlist[itemIndex]) ? playlist[itemIndex] : {
+                url: p,
+                title: title,
+                photographer: "Capture Crew",
+                dept: subtitle,
+                year: eventYear || "2026"
+              };
+
+              setLightboxItem({
+                ...activeItem,
+                playlist: playlist && playlist.length > 0 ? playlist : [activeItem],
+                currentIndex: itemIndex
+              });
+            }}
           >
             <div className="grid-item-inner">
               <BlurUpImage src={p} alt={title} />
