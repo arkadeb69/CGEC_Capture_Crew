@@ -2662,7 +2662,7 @@ section { padding: 7rem 0; }
   height: 100%;
   background: linear-gradient(90deg, #ff9933, var(--gold), #50C878);
   box-shadow: 0 0 14px var(--gold);
-  transition: width 0.1s linear;
+  transition: width 0.3s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 /* MOVING VEHICLE & TOOLTIP */
@@ -2671,7 +2671,7 @@ section { padding: 7rem 0; }
   top: 50%;
   transform: translate(-50%, -50%);
   z-index: 35;
-  transition: left 0.1s linear;
+  transition: left 0.3s cubic-bezier(0.25, 1, 0.5, 1);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -2742,28 +2742,28 @@ section { padding: 7rem 0; }
   height: 100%;
   width: 100%;
   z-index: 20;
-  transition: transform 0.15s ease-out;
+  transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 .timeline-node-card-wrap {
   position: absolute;
   width: 275px;
-  transform: translateX(-50%);
-  transition: opacity 0.35s ease, transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), filter 0.35s ease;
-  opacity: 0.4;
-  filter: blur(1px) grayscale(50%);
+  transform: translateX(-50%) scale(0.96);
+  transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), filter 0.4s ease;
+  opacity: 0.45;
+  filter: blur(0.5px) grayscale(40%);
 }
 
 .timeline-node-card-wrap.near {
-  opacity: 0.75;
-  filter: blur(0px) grayscale(20%);
+  opacity: 0.55;
+  filter: blur(0.3px) grayscale(30%);
 }
 
 .timeline-node-card-wrap.active {
-  opacity: 1;
-  filter: blur(0px) grayscale(0%);
-  transform: translateX(-50%) scale(1.04);
-  z-index: 30;
+  opacity: 1 !important;
+  filter: blur(0px) grayscale(0%) !important;
+  transform: translateX(-50%) scale(1.06) !important;
+  z-index: 35;
 }
 
 .timeline-node-card-wrap.pos-top {

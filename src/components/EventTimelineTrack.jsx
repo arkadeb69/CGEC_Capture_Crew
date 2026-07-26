@@ -85,7 +85,7 @@ export default function EventTimelineTrack({ events, staticIcons, navigate, gene
     <div 
       className="timeline-section-sticky-wrapper" 
       ref={sectionRef} 
-      style={{ height: isMobile ? 'auto' : `${Math.max(200, totalItems * 35)}vh` }}
+      style={{ height: isMobile ? 'auto' : `${Math.max(500, totalItems * 85)}vh` }}
     >
       <div className="timeline-sticky-container">
         <div className="timeline-header-wrap fade-in">
