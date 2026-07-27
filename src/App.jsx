@@ -513,6 +513,17 @@ export default function App() {
     return () => clearInterval(timer);
   }, [activeCovers.length, currentHeroIndex]);
 
+  // Disable right click (context menu) site-wide
+  useEffect(() => {
+    const handleContextMenu = (e) => {
+      e.preventDefault();
+    };
+    document.addEventListener("contextmenu", handleContextMenu);
+    return () => {
+      document.removeEventListener("contextmenu", handleContextMenu);
+    };
+  }, []);
+
   // Global Hash Scrolling Effect
   useEffect(() => {
     if (location.hash) {
