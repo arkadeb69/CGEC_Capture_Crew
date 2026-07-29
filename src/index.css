@@ -740,7 +740,9 @@ section { padding: 7rem 0; }
     background: rgba(255,255,255,0.03);
     border: 1px solid var(--border); border-radius: 16px;
     margin-bottom: 2.5rem; font-family: var(--font-body);
-    overflow: hidden;
+    overflow: visible !important;
+    position: relative;
+    z-index: 10;
   }
   .explorer-toolbar {
     display: flex; justify-content: space-between; align-items: center;
@@ -4233,20 +4235,21 @@ section { padding: 7rem 0; }
   bottom: 125%;
   left: 50%;
   transform: translateX(-50%) scale(0.8);
-  background: rgba(18, 18, 20, 0.95);
-  border: 1px solid var(--gold, #C9A96E);
+  background: rgba(18, 18, 20, 0.98);
+  border: 1.5px solid var(--gold, #C9A96E);
   border-radius: 16px;
-  padding: 14px 18px;
-  box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.6), 0 0 15px rgba(201, 169, 110, 0.2);
+  padding: 12px 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 20px rgba(201, 169, 110, 0.3);
   opacity: 0;
   visibility: hidden;
   transition:
     opacity 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55),
     transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55),
     visibility 0.4s ease;
-  z-index: 100;
+  z-index: 99999 !important;
   pointer-events: none;
-  backdrop-filter: blur(12px);
+  backdrop-filter: blur(16px);
+  white-space: nowrap;
 }
 
 .tooltip-container:hover .tooltip-content,
@@ -4269,53 +4272,48 @@ section { padding: 7rem 0; }
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   cursor: pointer;
   padding: 0;
   outline: none;
-  transition:
-    transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55),
-    background 0.3s ease,
-    box-shadow 0.4s ease;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
   position: relative;
   overflow: hidden;
-}
-
-.social-icon::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(
-    circle at center,
-    rgba(255, 255, 255, 0.8) 0%,
-    rgba(255, 255, 255, 0) 70%
-  );
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.social-icon:hover::before {
-  opacity: 1;
 }
 
 .social-icon svg {
   width: 20px;
   height: 20px;
-  fill: #e0e0e0;
-  transition:
-    transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55),
-    fill 0.3s ease;
-  z-index: 1;
+  fill: #ffffff !important;
+  display: block;
+  z-index: 2;
+  transition: transform 0.3s ease;
+}
+
+.social-icon.instagram {
+  background: linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045);
+}
+
+.social-icon.whatsapp {
+  background: linear-gradient(135deg, #25d366, #128c7e);
+}
+
+.social-icon.linkedin {
+  background: linear-gradient(135deg, #0077b5, #005e94);
+}
+
+.social-icon.copy-link {
+  background: linear-gradient(135deg, var(--gold, #C9A96E), #b58a3d);
 }
 
 .social-icon:hover {
-  transform: translateY(-4px) scale(1.1);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+  transform: translateY(-4px) scale(1.12);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+  border-color: #ffffff;
 }
 
 .social-icon:active {
@@ -4324,27 +4322,6 @@ section { padding: 7rem 0; }
 
 .social-icon:hover svg {
   transform: scale(1.15);
-  fill: white;
-}
-
-.social-icon.instagram:hover {
-  background: linear-gradient(135deg, #e1306c, #fd1d1d, #f56040);
-  border-color: transparent;
-}
-
-.social-icon.whatsapp:hover {
-  background: linear-gradient(135deg, #25d366, #128c7e);
-  border-color: transparent;
-}
-
-.social-icon.linkedin:hover {
-  background: linear-gradient(135deg, #0077b5, #005e94);
-  border-color: transparent;
-}
-
-.social-icon.copy-link:hover {
-  background: linear-gradient(135deg, var(--gold, #C9A96E), #b58a3d);
-  border-color: transparent;
 }
 
 /* Animation for Pulse Effect */
