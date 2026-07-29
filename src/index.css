@@ -4232,7 +4232,7 @@ section { padding: 7rem 0; }
 /* Tooltip Styles (Opens UPWARDS above the Share button) */
 .tooltip-content {
   position: absolute;
-  bottom: 125%;
+  bottom: calc(100% + 14px);
   left: 50%;
   transform: translateX(-50%) scale(0.8);
   background: rgba(18, 18, 20, 0.98);
@@ -4243,13 +4243,25 @@ section { padding: 7rem 0; }
   opacity: 0;
   visibility: hidden;
   transition:
-    opacity 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55),
-    transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55),
-    visibility 0.4s ease;
+    opacity 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55),
+    transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55),
+    visibility 0.3s ease;
   z-index: 99999 !important;
   pointer-events: none;
   backdrop-filter: blur(16px);
   white-space: nowrap;
+}
+
+/* Invisible hover bridge extending down to cover gap between button and popup icons */
+.tooltip-content::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: -30px;
+  right: -30px;
+  height: 30px;
+  background: transparent;
+  pointer-events: auto;
 }
 
 .tooltip-container:hover .tooltip-content,
