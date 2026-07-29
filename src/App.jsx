@@ -5405,7 +5405,7 @@ function RecruitmentModal({ onClose }) {
   const [submitted, setSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
-    name: '', email: '', phone: '', dept: '', year: '', positions: [], portfolio: ''
+    name: '', email: '', phone: '', dept: '', year: '', positions: [], otherPosition: '', portfolio: ''
   });
 
   const handleSubmit = async (e) => {
@@ -5414,15 +5414,27 @@ function RecruitmentModal({ onClose }) {
       alert("Please select at least one position.");
       return;
     }
+    if (formData.positions.includes("Others") && !formData.otherPosition.trim()) {
+      alert("Please specify your desired position for 'Others'.");
+      return;
+    }
     setIsSubmitting(true);
     try {
+      const positionsToSubmit = formData.positions.map(p => {
+        if (p === "Others") {
+          return formData.otherPosition.trim() ? `Others (${formData.otherPosition.trim()})` : "Others";
+        }
+        return p;
+      });
+
       await addDoc(collection(db, "applications"), {
         ...formData,
-        position: formData.positions.join(', '),
+        positions: positionsToSubmit,
+        position: positionsToSubmit.join(', '),
         timestamp: serverTimestamp(),
         seen: false
       });
-      sendApplicationConfirmationEmail(formData);
+      sendApplicationConfirmationEmail({ ...formData, positions: positionsToSubmit });
       setSubmitted(true);
     } catch (err) {
       console.error("Submission error:", err);
@@ -5451,7 +5463,8 @@ function RecruitmentModal({ onClose }) {
     "Moderator",
     "Videography Lead",
     "Photography Lead",
-    "Authenticity Verifier"
+    "Authenticity Verifier",
+    "Others"
   ];
 
   if (submitted) {
@@ -5528,10 +5541,22 @@ function RecruitmentModal({ onClose }) {
                   </div>
                 ))}
               </div>
+              {formData.positions.includes("Others") && (
+                <div style={{ marginTop: '1rem' }}>
+                  <label className="week-credit-role" style={{ display: 'block', marginBottom: '0.4rem', color: 'var(--gold)', fontSize: '0.7rem' }}>Specify Desired Position</label>
+                  <input 
+                    className="form-input" 
+                    placeholder="e.g. 3D Animator, Sound Engineer" 
+                    required
+                    value={formData.otherPosition} 
+                    onChange={e => setFormData({ ...formData, otherPosition: e.target.value })} 
+                  />
+                </div>
+              )}
             </div>
             <div className="form-group" style={{ gridColumn: '1 / -1' }}>
-              <label className="week-credit-role" style={{ display: 'block', marginBottom: '0.6rem', color: 'var(--gold)', fontSize: '0.7rem' }}>Portfolio Link (G-Drive / Behance)</label>
-              <input className="form-input" placeholder="https://..." required value={formData.portfolio} onChange={e => setFormData({...formData, portfolio: e.target.value})} />
+              <label className="week-credit-role" style={{ display: 'block', marginBottom: '0.6rem', color: 'var(--gold)', fontSize: '0.7rem' }}>Portfolio Link (G-Drive / Behance) (Optional)</label>
+              <input className="form-input" placeholder="https://..." value={formData.portfolio} onChange={e => setFormData({...formData, portfolio: e.target.value})} />
             </div>
           </div>
           <button className="form-submit" type="submit" disabled={isSubmitting} style={{ marginTop: '2.5rem', width: '100%' }}>
@@ -5547,7 +5572,7 @@ function RecruitmentPage() {
   const [submitted, setSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
-    name: '', email: '', phone: '', dept: '', year: '', positions: [], portfolio: ''
+    name: '', email: '', phone: '', dept: '', year: '', positions: [], otherPosition: '', portfolio: ''
   });
   const navigate = useNavigate();
 
@@ -5561,15 +5586,27 @@ function RecruitmentPage() {
       alert("Please select at least one position.");
       return;
     }
+    if (formData.positions.includes("Others") && !formData.otherPosition.trim()) {
+      alert("Please specify your desired position for 'Others'.");
+      return;
+    }
     setIsSubmitting(true);
     try {
+      const positionsToSubmit = formData.positions.map(p => {
+        if (p === "Others") {
+          return formData.otherPosition.trim() ? `Others (${formData.otherPosition.trim()})` : "Others";
+        }
+        return p;
+      });
+
       await addDoc(collection(db, "applications"), {
         ...formData,
-        position: formData.positions.join(', '),
+        positions: positionsToSubmit,
+        position: positionsToSubmit.join(', '),
         timestamp: serverTimestamp(),
         seen: false
       });
-      sendApplicationConfirmationEmail(formData);
+      sendApplicationConfirmationEmail({ ...formData, positions: positionsToSubmit });
       setSubmitted(true);
     } catch (err) {
       console.error("Submission error:", err);
@@ -5598,7 +5635,8 @@ function RecruitmentPage() {
     "Moderator",
     "Videography Lead",
     "Photography Lead",
-    "Authenticity Verifier"
+    "Authenticity Verifier",
+    "Others"
   ];
 
   if (submitted) {
@@ -5678,10 +5716,22 @@ function RecruitmentPage() {
                     </div>
                   ))}
                 </div>
+                {formData.positions.includes("Others") && (
+                  <div style={{ marginTop: '1rem' }}>
+                    <label className="week-credit-role" style={{ display: 'block', marginBottom: '0.4rem', color: 'var(--gold)', fontSize: '0.7rem' }}>Specify Desired Position</label>
+                    <input 
+                      className="form-input" 
+                      placeholder="e.g. 3D Animator, Sound Engineer" 
+                      required
+                      value={formData.otherPosition} 
+                      onChange={e => setFormData({ ...formData, otherPosition: e.target.value })} 
+                    />
+                  </div>
+                )}
               </div>
               <div className="form-group" style={{ gridColumn: '1 / -1' }}>
-                <label className="week-credit-role" style={{ display: 'block', marginBottom: '0.6rem', color: 'var(--gold)', fontSize: '0.7rem' }}>Portfolio Link (G-Drive / Behance)</label>
-                <input className="form-input" placeholder="https://..." required value={formData.portfolio} onChange={e => setFormData({...formData, portfolio: e.target.value})} />
+                <label className="week-credit-role" style={{ display: 'block', marginBottom: '0.6rem', color: 'var(--gold)', fontSize: '0.7rem' }}>Portfolio Link (G-Drive / Behance) (Optional)</label>
+                <input className="form-input" placeholder="https://..." value={formData.portfolio} onChange={e => setFormData({...formData, portfolio: e.target.value})} />
               </div>
             </div>
             <button className="form-submit" type="submit" disabled={isSubmitting} style={{ marginTop: '2.5rem', width: '100%' }}>
