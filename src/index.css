@@ -4104,17 +4104,17 @@ section { padding: 7rem 0; }
 
 .share-toast-bubble {
   position: absolute;
-  bottom: 120%;
+  bottom: 215%;
   left: 50%;
   transform: translateX(-50%);
   background: var(--gold, #C9A96E);
-  color: #111;
+  color: #0A0A0B;
   font-weight: 700;
   font-size: 0.72rem;
   padding: 6px 14px;
   border-radius: 20px;
   white-space: nowrap;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.5), 0 0 10px rgba(201, 169, 110, 0.4);
   animation: fadeInToast 0.3s ease;
   z-index: 120;
   pointer-events: none;
@@ -4130,20 +4130,21 @@ section { padding: 7rem 0; }
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #6e8efb, #a777e3);
-  color: white;
+  background: linear-gradient(135deg, var(--gold, #C9A96E), #b58a3d);
+  color: #0A0A0B;
   padding: 8px 20px;
   border-radius: 50px;
   cursor: pointer;
+  font-weight: 700;
   transition:
     background 0.4s cubic-bezier(0.25, 0.8, 0.25, 1),
     transform 0.3s ease,
     box-shadow 0.4s ease;
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 6px 15px rgba(201, 169, 110, 0.25);
   position: relative;
   z-index: 10;
   overflow: hidden;
-  border: none;
+  border: 1px solid rgba(255, 255, 255, 0.2);
   outline: none;
 }
 
@@ -4154,8 +4155,8 @@ section { padding: 7rem 0; }
   border-radius: inherit;
   background: linear-gradient(
     135deg,
-    rgba(110, 142, 251, 0.4),
-    rgba(167, 119, 227, 0.4)
+    rgba(201, 169, 110, 0.5),
+    rgba(229, 195, 131, 0.5)
   );
   filter: blur(15px);
   opacity: 0;
@@ -4172,7 +4173,7 @@ section { padding: 7rem 0; }
   height: 200%;
   background: radial-gradient(
     circle,
-    rgba(255, 255, 255, 0.3) 0%,
+    rgba(255, 255, 255, 0.4) 0%,
     rgba(255, 255, 255, 0) 70%
   );
   transform: scale(0);
@@ -4189,9 +4190,10 @@ section { padding: 7rem 0; }
 }
 
 .button-content:hover {
-  background: linear-gradient(135deg, #a777e3, #6e8efb);
-  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.3);
+  background: linear-gradient(135deg, #e5c383, var(--gold, #C9A96E));
+  box-shadow: 0 10px 25px rgba(201, 169, 110, 0.4);
   transform: translateY(-3px) scale(1.03);
+  color: #000;
 }
 
 .button-content:active {
@@ -4201,10 +4203,10 @@ section { padding: 7rem 0; }
 
 .text {
   font-size: 0.82rem;
-  font-weight: 600;
+  font-weight: 700;
   margin-right: 8px;
   white-space: nowrap;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.2);
   transition: letter-spacing 0.3s ease;
 }
 
@@ -4213,7 +4215,7 @@ section { padding: 7rem 0; }
 }
 
 .share-icon {
-  fill: white;
+  fill: #0A0A0B;
   transition:
     transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55),
     fill 0.3s ease;
@@ -4222,20 +4224,20 @@ section { padding: 7rem 0; }
 
 .button-content:hover .share-icon {
   transform: rotate(180deg) scale(1.1);
-  fill: #ffffff;
+  fill: #000;
 }
 
-/* Tooltip Styles */
+/* Tooltip Styles (Opens UPWARDS above the Share button) */
 .tooltip-content {
   position: absolute;
-  top: 112%;
+  bottom: 125%;
   left: 50%;
   transform: translateX(-50%) scale(0.8);
   background: rgba(18, 18, 20, 0.95);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  border: 1px solid var(--gold, #C9A96E);
   border-radius: 16px;
   padding: 14px 18px;
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.6), 0 0 15px rgba(201, 169, 110, 0.2);
   opacity: 0;
   visibility: hidden;
   transition:
@@ -4348,13 +4350,13 @@ section { padding: 7rem 0; }
 /* Animation for Pulse Effect */
 @keyframes pulse {
   0% {
-    box-shadow: 0 0 0 0 rgba(110, 142, 251, 0.4);
+    box-shadow: 0 0 0 0 rgba(201, 169, 110, 0.4);
   }
   70% {
-    box-shadow: 0 0 0 12px rgba(110, 142, 251, 0);
+    box-shadow: 0 0 0 12px rgba(201, 169, 110, 0);
   }
   100% {
-    box-shadow: 0 0 0 0 rgba(110, 142, 251, 0);
+    box-shadow: 0 0 0 0 rgba(201, 169, 110, 0);
   }
 }
 
@@ -4362,16 +4364,16 @@ section { padding: 7rem 0; }
   animation: pulse 3s infinite;
 }
 
-/* Tooltip Arrow */
+/* Tooltip Arrow pointing DOWNWARDS towards Share Button */
 .tooltip-content::before {
   content: "";
   position: absolute;
-  top: -8px;
+  bottom: -8px;
   left: 50%;
   transform: translateX(-50%);
-  border-width: 0 8px 8px 8px;
+  border-width: 8px 8px 0 8px;
   border-style: solid;
-  border-color: transparent transparent rgba(18, 18, 20, 0.95) transparent;
+  border-color: var(--gold, #C9A96E) transparent transparent transparent;
 }
 
 @media (max-width: 768px) {

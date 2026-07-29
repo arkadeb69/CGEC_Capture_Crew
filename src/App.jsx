@@ -5009,6 +5009,7 @@ function EventPage({ event, liveEvents, onClose, setLightboxItem, isGlobal, arch
                   eventYear={ev.calendarYear || "2026"}
                   isMobile={isMobile}
                   playlist={globalPlaylist}
+                  showShare={false}
                 />
               </div>
             ))}
@@ -5027,6 +5028,8 @@ function EventPage({ event, liveEvents, onClose, setLightboxItem, isGlobal, arch
               eventYear={event.calendarYear || "2026"} 
               isMobile={isMobile} 
               playlist={eventPlaylist}
+              showShare={true}
+              eventName={event.name}
             />
           </>
         )}
@@ -5179,7 +5182,7 @@ function EventShareButton({ title }) {
   );
 }
 
-function EventSection({ title, subtitle, photos, setLightboxItem, onClose, eventYear, isMobile, playlist }) {
+function EventSection({ title, subtitle, photos, setLightboxItem, onClose, eventYear, isMobile, playlist, showShare = true, eventName }) {
   const [searchTerm, setSearchTerm] = useState("");
   if (!photos || photos.length === 0) return null;
 
@@ -5210,7 +5213,7 @@ function EventSection({ title, subtitle, photos, setLightboxItem, onClose, event
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-            <EventShareButton title={title} />
+            {showShare && <EventShareButton title={eventName || title} />}
             <div className="explorer-info">{filteredPhotos.length} Items</div>
           </div>
         </div>
