@@ -5035,6 +5035,150 @@ function EventPage({ event, liveEvents, onClose, setLightboxItem, isGlobal, arch
   );
 }
 
+function EventShareButton({ title }) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
+
+  const getShareUrl = () => {
+    return window.location.href;
+  };
+
+  const getShareText = () => {
+    return `Check out ${title || 'this event'} on CGEC Capture Crew!`;
+  };
+
+  const handleCopyLink = async (platformName) => {
+    try {
+      const url = getShareUrl();
+      await navigator.clipboard.writeText(url);
+      setToastMessage(platformName ? `Link copied for ${platformName}!` : "Link copied to clipboard!");
+      setTimeout(() => setToastMessage(""), 2500);
+    } catch (err) {
+      console.error("Failed to copy link:", err);
+    }
+  };
+
+  const handleShareWhatsApp = () => {
+    const url = getShareUrl();
+    const text = getShareText();
+    const waUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(text + ' ' + url)}`;
+    window.open(waUrl, '_blank', 'noopener,noreferrer');
+  };
+
+  const handleShareLinkedIn = () => {
+    const url = getShareUrl();
+    const liUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`;
+    window.open(liUrl, '_blank', 'noopener,noreferrer');
+  };
+
+  const handleShareInstagram = () => {
+    handleCopyLink("Instagram");
+    setTimeout(() => {
+      window.open('https://www.instagram.com', '_blank', 'noopener,noreferrer');
+    }, 600);
+  };
+
+  return (
+    <div 
+      className={`tooltip-container ${isOpen ? 'active' : ''}`}
+      onMouseEnter={() => setIsOpen(true)}
+      onMouseLeave={() => setIsOpen(false)}
+    >
+      {toastMessage && (
+        <div className="share-toast-bubble">
+          {toastMessage}
+        </div>
+      )}
+      <div 
+        className="button-content"
+        onClick={() => setIsOpen(!isOpen)}
+        tabIndex={0}
+        role="button"
+        aria-label="Share Event"
+      >
+        <span className="text">Share</span>
+        <svg
+          className="share-icon"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          width="20"
+          height="20"
+        >
+          <path
+            d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92c0-1.61-1.31-2.92-2.92-2.92zM18 4c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zM6 13c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm12 7.02c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1z"
+          ></path>
+        </svg>
+      </div>
+      <div className="tooltip-content">
+        <div className="social-icons">
+          <button
+            type="button"
+            className="social-icon instagram"
+            onClick={handleShareInstagram}
+            title="Share / Copy for Instagram"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              width="20"
+              height="20"
+            >
+              <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+            </svg>
+          </button>
+          <button
+            type="button"
+            className="social-icon whatsapp"
+            onClick={handleShareWhatsApp}
+            title="Share via WhatsApp"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              width="20"
+              height="20"
+            >
+              <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
+            </svg>
+          </button>
+          <button
+            type="button"
+            className="social-icon linkedin"
+            onClick={handleShareLinkedIn}
+            title="Share on LinkedIn"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              width="20"
+              height="20"
+            >
+              <path
+                d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"
+              ></path>
+            </svg>
+          </button>
+          <button
+            type="button"
+            className="social-icon copy-link"
+            onClick={() => handleCopyLink()}
+            title="Copy Link to Clipboard"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              width="20"
+              height="20"
+            >
+              <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function EventSection({ title, subtitle, photos, setLightboxItem, onClose, eventYear, isMobile, playlist }) {
   const [searchTerm, setSearchTerm] = useState("");
   if (!photos || photos.length === 0) return null;
@@ -5066,6 +5210,7 @@ function EventSection({ title, subtitle, photos, setLightboxItem, onClose, event
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
+            <EventShareButton title={title} />
             <div className="explorer-info">{filteredPhotos.length} Items</div>
           </div>
         </div>
