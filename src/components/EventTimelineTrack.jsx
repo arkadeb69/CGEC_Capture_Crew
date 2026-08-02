@@ -7,6 +7,10 @@ export default function EventTimelineTrack({ events, staticIcons, navigate, gene
   const [mobileActiveIndex, setMobileActiveIndex] = useState(0);
   const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' ? window.innerWidth <= 1024 : false);
 
+  const targetProgressRef = useRef(0);
+  const currentProgressRef = useRef(0);
+  const animFrameRef = useRef(null);
+
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth <= 1024);
     window.addEventListener("resize", handleResize);
@@ -32,26 +36,51 @@ export default function EventTimelineTrack({ events, staticIcons, navigate, gene
     }
   ];
 
+  const totalItems = allTrackItems.length;
+
+  // Buttery Smooth Scroll Interpolation (Lerp + rAF) for Desktop Sticky Track
   useEffect(() => {
-    const handleScroll = () => {
+    if (isMobile) return;
+
+    const updateScrollTarget = () => {
       if (!sectionRef.current) return;
       const rect = sectionRef.current.getBoundingClientRect();
       const windowHeight = window.innerHeight;
-      
       const totalScrollableHeight = rect.height - windowHeight;
       if (totalScrollableHeight <= 0) return;
 
       const currentScroll = -rect.top;
       let progress = currentScroll / totalScrollableHeight;
-      progress = Math.max(0, Math.min(1, progress));
-      
-      setScrollProgress(progress);
+      targetProgressRef.current = Math.max(0, Math.min(1, progress));
     };
 
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    handleScroll();
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+    window.addEventListener("scroll", updateScrollTarget, { passive: true });
+    updateScrollTarget();
+
+    let isRunning = true;
+    const smoothLoop = () => {
+      if (!isRunning) return;
+      
+      const diff = targetProgressRef.current - currentProgressRef.current;
+      if (Math.abs(diff) > 0.00005) {
+        currentProgressRef.current += diff * 0.085; // 0.085 lerp factor for ultra smooth buttery inertia
+        setScrollProgress(currentProgressRef.current);
+      } else if (currentProgressRef.current !== targetProgressRef.current) {
+        currentProgressRef.current = targetProgressRef.current;
+        setScrollProgress(currentProgressRef.current);
+      }
+      
+      animFrameRef.current = requestAnimationFrame(smoothLoop);
+    };
+
+    animFrameRef.current = requestAnimationFrame(smoothLoop);
+
+    return () => {
+      isRunning = false;
+      window.removeEventListener("scroll", updateScrollTarget);
+      if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
+    };
+  }, [isMobile]);
 
   // Mobile / Tablet active card detection on vertical scroll
   useEffect(() => {
@@ -80,7 +109,7 @@ export default function EventTimelineTrack({ events, staticIcons, navigate, gene
     window.addEventListener("scroll", handleMobileScroll, { passive: true });
     handleMobileScroll();
     return () => window.removeEventListener("scroll", handleMobileScroll);
-  }, [isMobile, allTrackItems.length]);
+  }, [isMobile, totalItems]);
 
   // Restore scroll position when returning from an event detail view
   useEffect(() => {
@@ -106,11 +135,39 @@ export default function EventTimelineTrack({ events, staticIcons, navigate, gene
     }
   }, []);
 
-  const totalItems = allTrackItems.length;
   const activeIndex = Math.min(
     Math.floor(scrollProgress * totalItems),
     totalItems - 1
   );
+
+  // Smoothly scroll window to bring a specific card to focus
+  const scrollToCard = (idx) => {
+    if (!sectionRef.current) return;
+    const rect = sectionRef.current.getBoundingClientRect();
+    const windowHeight = window.innerHeight;
+    const totalScrollableHeight = rect.height - windowHeight;
+    if (totalScrollableHeight <= 0) return;
+
+    const sectionTop = window.scrollY + rect.top;
+    const itemProgress = totalItems > 1 ? idx / (totalItems - 1) : 0;
+    const targetY = sectionTop + itemProgress * totalScrollableHeight;
+
+    window.scrollTo({
+      top: targetY,
+      behavior: 'smooth'
+    });
+  };
+
+  const handleNavigate = (item) => {
+    sessionStorage.setItem("cc_events_timeline_scroll", window.scrollY.toString());
+    if (item.type === 'archive') {
+      navigate('/events-gallery');
+    } else if (item.comingSoon) {
+      alert("Coming Soon!");
+    } else {
+      navigate(`/events/${item.slug || generateSlug(item.name)}`);
+    }
+  };
 
   // Card spacing & translation for desktop sticky horizontal track
   const cardSpacing = 360;
@@ -153,7 +210,14 @@ export default function EventTimelineTrack({ events, staticIcons, navigate, gene
                   <div 
                     key={item.id || idx}
                     className={`mobile-card-wrapper ${isActive ? 'active' : ''} ${isPassed ? 'passed' : ''}`}
-                    style={{ "--item-color": itemColor }}
+                    style={{ "--item-color": itemColor, cursor: 'pointer' }}
+                    onClick={() => {
+                      if (!isActive) {
+                        scrollToCard(idx);
+                      } else {
+                        handleNavigate(item);
+                      }
+                    }}
                   >
                     <div className={`mobile-station-node ${isActive ? 'active' : ''} ${isPassed ? 'passed' : ''}`}>
                       <div className="station-ring"></div>
@@ -189,17 +253,9 @@ export default function EventTimelineTrack({ events, staticIcons, navigate, gene
                           <button 
                             className="window-dive-btn"
                             style={{ background: itemColor }}
-                            disabled={!isActive}
-                            onClick={() => {
-                              if (!isActive) return;
-                              sessionStorage.setItem("cc_events_timeline_scroll", window.scrollY.toString());
-                              if (item.type === 'archive') {
-                                navigate('/events-gallery');
-                              } else if (item.comingSoon) {
-                                alert("Coming Soon!");
-                              } else {
-                                navigate(`/events/${item.slug || generateSlug(item.name)}`);
-                              }
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleNavigate(item);
                             }}
                           >
                             {item.type === 'archive' ? 'Open Archive' : (item.comingSoon ? 'Coming Soon' : 'DIVE IN')}
@@ -222,7 +278,10 @@ export default function EventTimelineTrack({ events, staticIcons, navigate, gene
                 <div className="track-line-bg"></div>
                 <div 
                   className="track-line-fill" 
-                  style={{ width: `${translateX + 180}px` }}
+                  style={{ 
+                    width: `${translateX + 180}px`,
+                    willChange: 'width'
+                  }}
                 ></div>
 
                 {/* STATION NODES ON THE LINE */}
@@ -235,7 +294,13 @@ export default function EventTimelineTrack({ events, staticIcons, navigate, gene
                     <div 
                       key={`node-${item.id || idx}`}
                       className={`track-station-node ${isActive ? 'active' : ''} ${isPassed ? 'passed' : ''}`}
-                      style={{ left: `${nodeLeft}px`, "--item-color": item.color || "var(--gold)" }}
+                      style={{ 
+                        left: `${nodeLeft}px`, 
+                        "--item-color": item.color || "var(--gold)",
+                        cursor: 'pointer' 
+                      }}
+                      onClick={() => scrollToCard(idx)}
+                      title={`Jump to ${item.name}`}
                     >
                       <div className="station-ring"></div>
                     </div>
@@ -246,7 +311,10 @@ export default function EventTimelineTrack({ events, staticIcons, navigate, gene
               {/* HORIZONTALLY SCROLLING CARDS SLIDER */}
               <div 
                 className="horizontal-cards-slider"
-                style={{ transform: `translateX(${-translateX + 180}px)` }}
+                style={{ 
+                  transform: `translate3d(${-translateX + 180}px, 0, 0)`,
+                  willChange: 'transform'
+                }}
               >
                 {allTrackItems.map((item, idx) => {
                   const isTop = idx % 2 === 0;
@@ -264,7 +332,15 @@ export default function EventTimelineTrack({ events, staticIcons, navigate, gene
                       className={`timeline-node-card-wrap ${isTop ? 'pos-top' : 'pos-bottom'} ${isActive ? 'active' : ''} ${isPassed ? 'passed' : ''} ${isNear ? 'near' : 'far'}`}
                       style={{ 
                         left: `${idx * cardSpacing + 120}px`,
-                        "--item-color": itemColor
+                        "--item-color": itemColor,
+                        cursor: 'pointer'
+                      }}
+                      onClick={() => {
+                        if (!isActive) {
+                          scrollToCard(idx);
+                        } else {
+                          handleNavigate(item);
+                        }
                       }}
                     >
                       {/* CONNECTING LINE TO TRACK NODE */}
@@ -300,17 +376,9 @@ export default function EventTimelineTrack({ events, staticIcons, navigate, gene
                             <button 
                               className="window-dive-btn"
                               style={{ background: itemColor }}
-                              disabled={!isActive}
-                              onClick={() => {
-                                if (!isActive) return;
-                                sessionStorage.setItem("cc_events_timeline_scroll", window.scrollY.toString());
-                                if (item.type === 'archive') {
-                                  navigate('/events-gallery');
-                                } else if (item.comingSoon) {
-                                  alert("Coming Soon!");
-                                } else {
-                                  navigate(`/events/${item.slug || generateSlug(item.name)}`);
-                                }
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleNavigate(item);
                               }}
                             >
                               {item.type === 'archive' ? 'Open Archive' : (item.comingSoon ? 'Coming Soon' : 'DIVE IN')}

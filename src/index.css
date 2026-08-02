@@ -3185,28 +3185,49 @@ section { padding: 7rem 0; }
   height: 100%;
   width: 100%;
   z-index: 20;
-  transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+  will-change: transform;
 }
 
 .timeline-node-card-wrap {
   position: absolute;
   width: 275px;
   transform: translateX(-50%) scale(0.96);
-  transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), filter 0.4s ease;
+  transition: opacity 0.4s cubic-bezier(0.25, 1, 0.5, 1), transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), filter 0.4s ease;
   opacity: 0.45;
   filter: blur(0.5px) grayscale(40%);
+  will-change: transform, opacity;
+}
+
+.timeline-node-card-wrap:hover {
+  opacity: 0.85;
+  filter: blur(0px) grayscale(0%);
 }
 
 .timeline-node-card-wrap.near {
-  opacity: 0.55;
-  filter: blur(0.3px) grayscale(30%);
+  opacity: 0.65;
+  filter: blur(0.2px) grayscale(20%);
 }
 
 .timeline-node-card-wrap.active {
   opacity: 1 !important;
   filter: blur(0px) grayscale(0%) !important;
-  transform: translateX(-50%) scale(1.06) !important;
+  transform: translateX(-50%) scale(1.08) !important;
   z-index: 35;
+}
+
+.timeline-node-card-wrap.active .retro-window-card {
+  border-color: var(--item-color) !important;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8), 0 0 25px var(--item-color) !important;
+}
+
+.timeline-node-card-wrap.active .window-dive-btn {
+  box-shadow: 0 0 18px var(--item-color);
+  animation: diveBtnPulse 2s ease-in-out infinite alternate;
+}
+
+@keyframes diveBtnPulse {
+  0% { transform: scale(1); filter: brightness(1); }
+  100% { transform: scale(1.05); filter: brightness(1.25); }
 }
 
 .timeline-node-card-wrap.pos-top {
