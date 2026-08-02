@@ -1099,14 +1099,81 @@ section { padding: 7rem 0; }
 .footer-link:hover { color: var(--gold); transform: translateY(-2px); }
 
 .footer-socials {
-  display: flex; gap: 1.5rem;
+  display: flex;
+  gap: 1.2rem;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin: 0.5rem 0;
 }
-.social-icon {
-  font-size: 0.75rem; color: var(--white); text-decoration: none;
-  padding: 0.4rem 0.9rem; border: 1px solid var(--border);
-  border-radius: 100px; transition: all 0.3s;
+
+.footer-social-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  color: rgba(255, 255, 255, 0.85);
+  text-decoration: none;
+  padding: 0.55rem 1.2rem;
+  border-radius: 50px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(10px);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
-.social-icon:hover { border-color: var(--gold); color: var(--gold); background: rgba(201,169,110,0.05); }
+
+.footer-social-btn span,
+.footer-social-btn svg {
+  position: relative;
+  z-index: 1;
+}
+
+.footer-social-icon {
+  fill: rgba(255, 255, 255, 0.85);
+  transition: transform 0.3s ease, fill 0.3s ease;
+}
+
+/* Hover States for Each Social Platform */
+.footer-social-btn.instagram:hover {
+  border-color: rgba(225, 48, 108, 0.6);
+  color: #fff;
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 8px 25px rgba(225, 48, 108, 0.35), 0 0 15px rgba(253, 29, 29, 0.2);
+  background: linear-gradient(135deg, rgba(131, 58, 180, 0.25), rgba(253, 29, 29, 0.25), rgba(252, 176, 69, 0.25));
+}
+.footer-social-btn.instagram:hover .footer-social-icon {
+  fill: #fd1d1d;
+  transform: scale(1.15) rotate(-5deg);
+}
+
+.footer-social-btn.linkedin:hover {
+  border-color: rgba(0, 119, 181, 0.6);
+  color: #fff;
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 8px 25px rgba(0, 119, 181, 0.35), 0 0 15px rgba(0, 119, 181, 0.2);
+  background: linear-gradient(135deg, rgba(0, 119, 181, 0.3), rgba(0, 94, 148, 0.2));
+}
+.footer-social-btn.linkedin:hover .footer-social-icon {
+  fill: #0077b5;
+  transform: scale(1.15);
+}
+
+.footer-social-btn.facebook:hover {
+  border-color: rgba(24, 119, 242, 0.6);
+  color: #fff;
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 8px 25px rgba(24, 119, 242, 0.35), 0 0 15px rgba(24, 119, 242, 0.2);
+  background: linear-gradient(135deg, rgba(24, 119, 242, 0.3), rgba(22, 94, 208, 0.2));
+}
+.footer-social-btn.facebook:hover .footer-social-icon {
+  fill: #1877f2;
+  transform: scale(1.15);
+}
 
 .footer-bottom {
   margin-top: 1.5rem; display: flex; justify-content: center;
