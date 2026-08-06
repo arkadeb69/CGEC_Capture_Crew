@@ -1115,9 +1115,16 @@ If you'd rather not receive these club updates, you can unsubscribe here: ${unsu
     if (!certId.trim()) return;
     setIsVerifying(true);
     setVerifyResult(null);
+    const startTime = Date.now();
     try {
       const q = query(collection(db, "certificates"), where("serialNo", "==", certId.trim()));
       const snap = await getDocs(q);
+      
+      const elapsedTime = Date.now() - startTime;
+      if (elapsedTime < 1200) {
+        await new Promise(resolve => setTimeout(resolve, 1200 - elapsedTime));
+      }
+
       if (!snap.empty) {
         setVerifyResult(snap.docs[0].data());
       } else {
@@ -1914,7 +1921,18 @@ If you'd rather not receive these club updates, you can unsubscribe here: ${unsu
               </button>
             </form>
 
-            {verifyResult && (
+            {isVerifying && (
+              <div className="finding-animation-container fade-in visible">
+                <div className="finding-gif-wrapper">
+                  <img src="/finding.gif" alt="Searching Certificate..." className="finding-gif" />
+                </div>
+                <div className="finding-status-text">
+                  Searching Certificate Record<span className="finding-dots">...</span>
+                </div>
+              </div>
+            )}
+
+            {!isVerifying && verifyResult && (
               <div className="verify-result fade-in visible">
                 {verifyResult.error ? (
                   <div className="result-error">{verifyResult.error}</div>
