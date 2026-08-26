@@ -1769,10 +1769,10 @@ If you'd rather not receive these club updates, you can unsubscribe here: ${unsu
               </div>
             )}
 
-            {/* EX-INCHARGE */}
+            {/* CLUB ADVISORS */}
             {teamMembers.ex_incharge?.length > 0 && (
               <div className="team-subcategory">
-                <h3 className="subcategory-title"><em>Ex-Incharges</em></h3>
+                <h3 className="subcategory-title"><em>Club Advisors</em></h3>
                 <div className="team-grid incharge-grid">
                   {teamMembers.ex_incharge.map(m => (
                     <div key={m.id || m.name} className="team-card incharge-card fade-in">
@@ -4380,7 +4380,7 @@ function AdminTeamMgmt({ teamMembers, DEPTS, YEARS }) {
   const categories = [
     { id: 'founders', label: 'Founders' },
     { id: 'incharge', label: 'Incharges' },
-    { id: 'ex_incharge', label: 'Ex-Incharges' },
+    { id: 'ex_incharge', label: 'Club Advisors' },
     { id: 'coordinators', label: 'Coordinators' },
     { id: 'core', label: 'Core Team' }
   ];
