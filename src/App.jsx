@@ -3,6 +3,7 @@ import { Routes, Route, Link, useLocation, useNavigate, useParams, Navigate } fr
 import { db, auth } from "./firebase";
 import { collection, query, where, getDocs, addDoc, updateDoc, deleteDoc, doc, setDoc, getDoc, orderBy, onSnapshot, serverTimestamp, writeBatch } from "firebase/firestore";
 import { signInWithEmailAndPassword, onAuthStateChanged, signOut, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import imageCompression from "browser-image-compression";
 import placeholderImg from "./assets/placeholder.png";
 import BlurUpImage from "./components/BlurUpImage";
 import BulkImageUploader from "./components/BulkImageUploader";
@@ -5297,6 +5298,7 @@ function EventSection({ title, subtitle, photos, setLightboxItem, onClose, event
 // ✦✦✦ RECRUITMENT COMPONENTS ✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦
 function AdminApplications() {
   const [apps, setApps] = useState([]);
+  const [activePhotoModal, setActivePhotoModal] = useState(null);
 
   useEffect(() => {
     const q = query(collection(db, "applications"), orderBy("timestamp", "desc"));
@@ -5347,44 +5349,100 @@ function AdminApplications() {
               <th style={{ padding: '1rem' }}>Applicant</th>
               <th style={{ padding: '1rem' }}>Position</th>
               <th style={{ padding: '1rem' }}>Contact Info</th>
-              <th style={{ padding: '1rem' }}>Portfolio</th>
+              <th style={{ padding: '1rem' }}>Uploaded Photos</th>
+              <th style={{ padding: '1rem' }}>Showcase Links</th>
               <th style={{ padding: '1rem' }}>Action</th>
             </tr>
           </thead>
           <tbody>
-            {apps.map(app => (
-              <tr key={app.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-                <td style={{ padding: '1rem' }}>
-                  <div style={{ fontWeight: '600', display: 'flex', alignItems: 'center' }}>
-                    {app.seen === false && <span className="new-app-dot" title="New Application" />}
-                    {app.name}
-                  </div>
-                  <div style={{ fontSize: '0.7rem', color: 'var(--gold)' }}>{app.dept} · {app.year}</div>
-                </td>
-                <td style={{ padding: '1rem' }}>{app.position}</td>
-                <td style={{ padding: '1rem' }}>
-                  <div>{app.email}</div>
-                  <div style={{ fontSize: '0.7rem', opacity: 0.7 }}>{app.phone}</div>
-                </td>
-                <td style={{ padding: '1rem' }}>
-                  <a href={app.portfolio} target="_blank" rel="noreferrer" style={{ color: 'var(--gold)', textDecoration: 'none' }}>View Link</a>
-                </td>
-                <td style={{ padding: '1rem' }}>
-                  <button onClick={async () => {
-                    if (window.confirm(`Delete recruitment application from ${app.name || app.email}?`)) {
-                      try {
-                        await deleteDoc(doc(db, "applications", app.id));
-                        alert("Application deleted.");
-                      } catch (err) { alert("Delete failed: " + err.message); }
-                    }
-                  }} style={{ background: '#ff4444', border: 'none', color: '#fff', padding: '0.3rem 0.6rem', borderRadius: '4px', cursor: 'pointer', fontSize: '0.7rem' }}>Delete</button>
-                </td>
-              </tr>
-            ))}
+            {apps.map(app => {
+              const photoList = app.photos || (app.photoUrl ? [app.photoUrl] : []);
+              return (
+                <tr key={app.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', verticalAlign: 'top' }}>
+                  <td style={{ padding: '1rem' }}>
+                    <div style={{ fontWeight: '600', display: 'flex', alignItems: 'center' }}>
+                      {app.seen === false && <span className="new-app-dot" title="New Application" />}
+                      {app.name}
+                    </div>
+                    <div style={{ fontSize: '0.7rem', color: 'var(--gold)', marginTop: '4px' }}>{app.dept} · {app.year}</div>
+                  </td>
+                  <td style={{ padding: '1rem', color: '#E8C98A', fontWeight: '500' }}>{app.position}</td>
+                  <td style={{ padding: '1rem' }}>
+                    <div>{app.email}</div>
+                    <div style={{ fontSize: '0.7rem', opacity: 0.7, marginTop: '2px' }}>{app.phone}</div>
+                  </td>
+                  <td style={{ padding: '1rem' }}>
+                    {photoList.length > 0 ? (
+                      <div>
+                        <div style={{ fontSize: '0.7rem', color: 'var(--gold)', marginBottom: '6px', fontWeight: 'bold' }}>
+                          {photoList.length} Photo{photoList.length > 1 ? 's' : ''}
+                        </div>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', maxWidth: '180px' }}>
+                          {photoList.map((pUrl, pIdx) => (
+                            <img 
+                              key={pIdx} 
+                              src={pUrl} 
+                              alt={`Work ${pIdx + 1}`} 
+                              onClick={() => setActivePhotoModal({ url: pUrl, title: `${app.name} - Photo ${pIdx + 1}` })}
+                              style={{ width: '42px', height: '42px', objectFit: 'cover', borderRadius: '6px', border: '1px solid var(--gold)', cursor: 'pointer', transition: 'transform 0.2s' }}
+                              title="Click to view full image"
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    ) : (
+                      <span style={{ opacity: 0.4, fontSize: '0.75rem' }}>No photos</span>
+                    )}
+                  </td>
+                  <td style={{ padding: '1rem' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                      {app.driveLink && (
+                        <a href={app.driveLink} target="_blank" rel="noreferrer" style={{ color: 'var(--gold)', textDecoration: 'underline', fontSize: '0.75rem', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                          <span>📁</span> Drive / Video Link
+                        </a>
+                      )}
+                      {app.instaLink && (
+                        <a href={app.instaLink} target="_blank" rel="noreferrer" style={{ color: '#FF7A90', textDecoration: 'underline', fontSize: '0.75rem', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                          <InstagramIcon size={13} /> Instagram Link
+                        </a>
+                      )}
+                      {app.portfolio && !app.driveLink && !app.instaLink && (
+                        <a href={app.portfolio} target="_blank" rel="noreferrer" style={{ color: 'var(--gold)', textDecoration: 'underline', fontSize: '0.75rem' }}>
+                          🔗 Portfolio Link
+                        </a>
+                      )}
+                      {!app.driveLink && !app.instaLink && !app.portfolio && (
+                        <span style={{ opacity: 0.4, fontSize: '0.75rem' }}>No links provided</span>
+                      )}
+                    </div>
+                  </td>
+                  <td style={{ padding: '1rem' }}>
+                    <button onClick={async () => {
+                      if (window.confirm(`Delete recruitment application from ${app.name || app.email}?`)) {
+                        try {
+                          await deleteDoc(doc(db, "applications", app.id));
+                          alert("Application deleted.");
+                        } catch (err) { alert("Delete failed: " + err.message); }
+                      }
+                    }} style={{ background: '#ff4444', border: 'none', color: '#fff', padding: '0.3rem 0.6rem', borderRadius: '4px', cursor: 'pointer', fontSize: '0.7rem' }}>Delete</button>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
         {apps.length === 0 && <div style={{ padding: '2rem', textAlign: 'center', opacity: 0.5 }}>No applications yet.</div>}
       </div>
+
+      {activePhotoModal && (
+        <div className="lightbox open" onClick={() => setActivePhotoModal(null)}>
+          <div style={{ position: 'relative', maxWidth: '90vw', maxHeight: '90vh' }} onClick={e => e.stopPropagation()}>
+            <img src={activePhotoModal.url} alt="Full view" style={{ maxWidth: '90vw', maxHeight: '80vh', objectFit: 'contain', borderRadius: '8px', border: '2px solid var(--gold)' }} />
+            <div style={{ color: '#fff', textAlign: 'center', marginTop: '8px', fontSize: '0.9rem' }}>{activePhotoModal.title}</div>
+            <button className="lightbox-close" onClick={() => setActivePhotoModal(null)}>✕</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -5438,6 +5496,10 @@ function MemberForm({ DEPTS, YEARS, onAdded }) {
 
 async function sendApplicationConfirmationEmail(formData) {
   try {
+    const photoList = formData.photos || [];
+    const driveLink = formData.driveLink || '';
+    const instaLink = formData.instaLink || '';
+
     // 1. Applicant Confirmation Email
     const applicantEmailPromise = fetch('/api/send-email', {
       method: 'POST',
@@ -5470,7 +5532,7 @@ async function sendApplicationConfirmationEmail(formData) {
               <h3 style="color: #C9A96E; font-size: 16px; margin-top: 0; margin-bottom: 1rem;">Summary of your application:</h3>
               <table style="width: 100%; border-collapse: collapse; font-size: 14px; color: #ccc;">
                 <tr>
-                  <td style="padding: 6px 0; font-weight: bold; width: 120px; color: #888;">Position(s):</td>
+                  <td style="padding: 6px 0; font-weight: bold; width: 140px; color: #888;">Position(s):</td>
                   <td style="padding: 6px 0; color: #fff;">${formData.positions.join(', ')}</td>
                 </tr>
                 <tr>
@@ -5482,9 +5544,11 @@ async function sendApplicationConfirmationEmail(formData) {
                   <td style="padding: 6px 0; color: #fff;">${formData.year}</td>
                 </tr>
                 <tr>
-                  <td style="padding: 6px 0; font-weight: bold; color: #888;">Portfolio:</td>
-                  <td style="padding: 6px 0; color: #fff;"><a href="${formData.portfolio}" target="_blank" style="color: #C9A96E; text-decoration: none;">View Portfolio Link</a></td>
+                  <td style="padding: 6px 0; font-weight: bold; color: #888;">Photos Uploaded:</td>
+                  <td style="padding: 6px 0; color: #fff;">${photoList.length} Photo(s)</td>
                 </tr>
+                ${driveLink ? `<tr><td style="padding: 6px 0; font-weight: bold; color: #888;">Drive / Video Link:</td><td style="padding: 6px 0; color: #fff;"><a href="${driveLink}" target="_blank" style="color: #C9A96E;">View Drive/Video</a></td></tr>` : ''}
+                ${instaLink ? `<tr><td style="padding: 6px 0; font-weight: bold; color: #888;">Instagram Link:</td><td style="padding: 6px 0; color: #fff;"><a href="${instaLink}" target="_blank" style="color: #C9A96E;">View Instagram Page</a></td></tr>` : ''}
               </table>
             </div>
 
@@ -5557,8 +5621,16 @@ async function sendApplicationConfirmationEmail(formData) {
                   <td style="padding: 6px 0; color: #fff;">${formData.year}</td>
                 </tr>
                 <tr>
-                  <td style="padding: 6px 0; font-weight: bold; color: #888;">Portfolio / Work:</td>
-                  <td style="padding: 6px 0; color: #fff;">${formData.portfolio ? `<a href="${formData.portfolio}" target="_blank" style="color: #C9A96E; text-decoration: underline;">View Portfolio Link</a>` : 'Not provided'}</td>
+                  <td style="padding: 6px 0; font-weight: bold; color: #888;">Uploaded Photos:</td>
+                  <td style="padding: 6px 0; color: #fff;">${photoList.length > 0 ? `${photoList.length} photos uploaded` : 'None'}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px 0; font-weight: bold; color: #888;">Drive / Video Link:</td>
+                  <td style="padding: 6px 0; color: #fff;">${driveLink ? `<a href="${driveLink}" target="_blank" style="color: #C9A96E; text-decoration: underline;">View Drive/Video</a>` : 'Not provided'}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px 0; font-weight: bold; color: #888;">Instagram Link:</td>
+                  <td style="padding: 6px 0; color: #fff;">${instaLink ? `<a href="${instaLink}" target="_blank" style="color: #C9A96E; text-decoration: underline;">View Instagram Link</a>` : 'Not provided'}</td>
                 </tr>
               </table>
             </div>
@@ -5582,11 +5654,211 @@ async function sendApplicationConfirmationEmail(formData) {
   }
 }
 
+function RecruitmentPhotoUploader({ photos, setPhotos, maxPhotos = 10 }) {
+  const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState("");
+  const [uploadError, setUploadError] = useState("");
+
+  const handleFileSelect = async (e) => {
+    const selectedFiles = Array.from(e.target.files || []);
+    if (selectedFiles.length === 0) return;
+
+    if (photos.length + selectedFiles.length > maxPhotos) {
+      const allowedCount = maxPhotos - photos.length;
+      if (allowedCount <= 0) {
+        setUploadError(`Maximum ${maxPhotos} photos limit reached.`);
+        return;
+      }
+      setUploadError(`Only ${allowedCount} more photo(s) could be uploaded (Maximum ${maxPhotos}).`);
+      selectedFiles.splice(allowedCount);
+    } else {
+      setUploadError("");
+    }
+
+    setUploading(true);
+    const newUploadedUrls = [];
+
+    const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || "dwp7fe7bo";
+    const presetsToTry = [
+      import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET,
+      "ml_default",
+      "cgec_cc",
+      "unsigned"
+    ].filter(Boolean);
+
+    for (let i = 0; i < selectedFiles.length; i++) {
+      const file = selectedFiles[i];
+      setUploadProgress(`Uploading photo ${i + 1} of ${selectedFiles.length}...`);
+
+      let uploadFile = file;
+      try {
+        const options = {
+          maxSizeMB: 2,
+          maxWidthOrHeight: 2500,
+          useWebWorker: true,
+          initialQuality: 0.8
+        };
+        uploadFile = await imageCompression(file, options);
+      } catch (compErr) {
+        console.warn("Compression fallback:", compErr);
+      }
+
+      let uploadedUrl = null;
+      for (const preset of presetsToTry) {
+        try {
+          const formData = new FormData();
+          formData.append('file', uploadFile);
+          formData.append('upload_preset', preset);
+
+          const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+            method: 'POST',
+            body: formData
+          });
+
+          if (res.ok) {
+            const data = await res.json();
+            if (data.secure_url) {
+              uploadedUrl = data.secure_url;
+              break;
+            }
+          }
+        } catch (err) {
+          console.warn(`Upload with preset '${preset}' failed:`, err);
+        }
+      }
+
+      if (uploadedUrl) {
+        newUploadedUrls.push(uploadedUrl);
+      } else {
+        setUploadError(`Failed to upload ${file.name}. Please check image size or connection.`);
+      }
+    }
+
+    if (newUploadedUrls.length > 0) {
+      setPhotos(prev => [...prev, ...newUploadedUrls].slice(0, maxPhotos));
+    }
+    setUploading(false);
+    setUploadProgress("");
+  };
+
+  const removePhoto = (indexToRemove) => {
+    setPhotos(prev => prev.filter((_, idx) => idx !== indexToRemove));
+  };
+
+  return (
+    <div className="recruitment-photo-uploader" style={{ gridColumn: '1 / -1', marginBottom: '1rem' }}>
+      <label className="week-credit-role" style={{ display: 'block', marginBottom: '0.6rem', color: 'var(--gold)', fontSize: '0.85rem', fontWeight: 'bold' }}>
+        Upload Your Best Photos (Up to 10) <span style={{ opacity: 0.7, fontWeight: 'normal' }}>({photos.length}/{maxPhotos})</span>
+      </label>
+
+      {photos.length < maxPhotos && (
+        <div style={{
+          border: '2px dashed var(--gold)',
+          borderRadius: '12px',
+          padding: '2rem 1rem',
+          textAlign: 'center',
+          background: 'rgba(201, 169, 110, 0.03)',
+          cursor: uploading ? 'wait' : 'pointer',
+          position: 'relative',
+          transition: 'all 0.2s ease'
+        }}>
+          <input 
+            type="file" 
+            multiple 
+            accept="image/jpeg,image/png,image/webp,image/avif,image/heic"
+            onChange={handleFileSelect}
+            disabled={uploading}
+            style={{
+              position: 'absolute',
+              top: 0, left: 0, width: '100%', height: '100%',
+              opacity: 0, cursor: uploading ? 'wait' : 'pointer'
+            }}
+          />
+          <div style={{ fontSize: '2.2rem', marginBottom: '0.5rem' }}>📸</div>
+          <div style={{ fontSize: '0.9rem', fontWeight: 'bold', color: 'var(--white)' }}>
+            {uploading ? uploadProgress : 'Click or Drag & Drop to Upload Best Photos'}
+          </div>
+          <div style={{ fontSize: '0.75rem', color: 'var(--gold)', marginTop: '0.4rem', opacity: 0.8 }}>
+            Direct Cloudinary upload · Select up to 10 photos showcasing your photography & editing skills
+          </div>
+        </div>
+      )}
+
+      {uploadError && (
+        <div style={{ color: '#ff4d4d', fontSize: '0.75rem', marginTop: '0.5rem', background: 'rgba(255,77,77,0.1)', padding: '0.5rem', borderRadius: '6px' }}>
+          {uploadError}
+        </div>
+      )}
+
+      {photos.length > 0 && (
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fill, minmax(95px, 1fr))',
+          gap: '0.75rem',
+          marginTop: '1rem'
+        }}>
+          {photos.map((url, idx) => (
+            <div key={idx} style={{
+              position: 'relative',
+              borderRadius: '8px',
+              overflow: 'hidden',
+              border: '1px solid var(--gold)',
+              aspectRatio: '1',
+              background: '#000'
+            }}>
+              <img src={url} alt={`Uploaded ${idx + 1}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              <button 
+                type="button"
+                onClick={() => removePhoto(idx)}
+                style={{
+                  position: 'absolute',
+                  top: '3px',
+                  right: '3px',
+                  background: 'rgba(0,0,0,0.85)',
+                  color: '#ff4444',
+                  border: '1px solid #ff4444',
+                  borderRadius: '50%',
+                  width: '22px',
+                  height: '22px',
+                  cursor: 'pointer',
+                  fontSize: '12px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontWeight: 'bold',
+                  zIndex: 2
+                }}
+                title="Remove photo"
+              >
+                ✕
+              </button>
+              <span style={{
+                position: 'absolute',
+                bottom: '3px',
+                left: '3px',
+                background: 'rgba(0,0,0,0.7)',
+                color: '#fff',
+                fontSize: '0.65rem',
+                padding: '1px 5px',
+                borderRadius: '3px',
+                fontWeight: 'bold'
+              }}>
+                #{idx + 1}
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function RecruitmentModal({ onClose }) {
   const [submitted, setSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [photos, setPhotos] = useState([]);
   const [formData, setFormData] = useState({
-    name: '', email: '', phone: '', dept: '', year: '', positions: [], otherPosition: '', portfolio: ''
+    name: '', email: '', phone: '', dept: '', year: '', positions: [], otherPosition: '', driveLink: '', instaLink: ''
   });
 
   const handleSubmit = async (e) => {
@@ -5599,6 +5871,10 @@ function RecruitmentModal({ onClose }) {
       alert("Please specify your desired position for 'Others'.");
       return;
     }
+    if (photos.length === 0 && !formData.driveLink.trim() && !formData.instaLink.trim()) {
+      alert("Please upload at least 1 photo OR provide a Google Drive / Video link or Instagram link to showcase your work.");
+      return;
+    }
     setIsSubmitting(true);
     try {
       const positionsToSubmit = formData.positions.map(p => {
@@ -5608,18 +5884,24 @@ function RecruitmentModal({ onClose }) {
         return p;
       });
 
-      await addDoc(collection(db, "applications"), {
+      const applicationData = {
         ...formData,
         positions: positionsToSubmit,
         position: positionsToSubmit.join(', '),
+        photos,
+        driveLink: formData.driveLink.trim(),
+        instaLink: formData.instaLink.trim(),
+        portfolio: formData.driveLink.trim() || formData.instaLink.trim() || (photos[0] || ''),
         timestamp: serverTimestamp(),
         seen: false
-      });
-      sendApplicationConfirmationEmail({ ...formData, positions: positionsToSubmit });
+      };
+
+      await addDoc(collection(db, "applications"), applicationData);
+      sendApplicationConfirmationEmail(applicationData);
       setSubmitted(true);
     } catch (err) {
       console.error("Submission error:", err);
-      alert("Submission failed. Please check your internet.");
+      alert("Submission failed. Please check your internet connection.");
     } finally { setIsSubmitting(false); }
   };
 
@@ -5640,11 +5922,7 @@ function RecruitmentModal({ onClose }) {
     "Photo Editor",
     "PR Manager",
     "Content Writer",
-    "Co-ordinator",
     "Moderator",
-    "Videography Lead",
-    "Photography Lead",
-    "Authenticity Verifier",
     "Others"
   ];
 
@@ -5663,11 +5941,11 @@ function RecruitmentModal({ onClose }) {
 
   return (
     <div className="lightbox open" onClick={onClose}>
-      <div className="admin-modal glass-form fade-in visible" onClick={e => e.stopPropagation()} style={{ maxWidth: '650px' }}>
+      <div className="admin-modal glass-form fade-in visible" onClick={e => e.stopPropagation()} style={{ maxWidth: '750px', maxHeight: '90vh', overflowY: 'auto' }}>
         <button className="lightbox-close" onClick={onClose} style={{ top: '2rem', right: '2rem' }}>✕</button>
         <div className="section-label">✧ Join our legacy</div>
         <h2 className="section-title" style={{ fontSize: '2.5rem' }}>The <em>Core Team</em></h2>
-        <p className="section-sub" style={{ marginBottom: '3rem' }}>We are looking for creative souls. Apply below.</p>
+        <p className="section-sub" style={{ marginBottom: '2.5rem' }}>We are looking for creative souls. Apply below.</p>
         
         <form className="feedback-form" style={{ background: 'transparent', padding: '0', boxShadow: 'none' }} onSubmit={handleSubmit}>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', textAlign: 'left' }}>
@@ -5735,10 +6013,48 @@ function RecruitmentModal({ onClose }) {
                 </div>
               )}
             </div>
-            <div className="form-group" style={{ gridColumn: '1 / -1' }}>
-              <label className="week-credit-role" style={{ display: 'block', marginBottom: '0.6rem', color: 'var(--gold)', fontSize: '0.7rem' }}>Portfolio Link (G-Drive / Behance) (Optional)</label>
-              <input className="form-input" placeholder="https://..." value={formData.portfolio} onChange={e => setFormData({...formData, portfolio: e.target.value})} />
+
+            {/* Photo Uploader */}
+            <RecruitmentPhotoUploader photos={photos} setPhotos={setPhotos} maxPhotos={10} />
+
+            {/* Showcase Links Section */}
+            <div style={{ gridColumn: '1 / -1', marginTop: '0.5rem', borderTop: '1px dashed rgba(255,255,255,0.15)', paddingTop: '1.5rem' }}>
+              <div style={{ color: 'var(--gold)', fontSize: '0.85rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>
+                ✧ Work Showcase Links
+              </div>
+              <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.7)', marginBottom: '1.2rem', lineHeight: '1.5' }}>
+                You can paste your video editings/Google Drive link and Instagram page link below. Submitting both is not mandatory, but at least one form of showcase (photos or links) is required.
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.2rem' }}>
+                <div className="form-group">
+                  <label className="week-credit-role" style={{ display: 'block', marginBottom: '0.4rem', color: 'var(--gold)', fontSize: '0.7rem' }}>
+                    Google Drive / Video Editing Link
+                  </label>
+                  <input 
+                    className="form-input" 
+                    type="url"
+                    placeholder="https://drive.google.com/... or YouTube link" 
+                    value={formData.driveLink} 
+                    onChange={e => setFormData({...formData, driveLink: e.target.value})} 
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label className="week-credit-role" style={{ display: 'block', marginBottom: '0.4rem', color: 'var(--gold)', fontSize: '0.7rem' }}>
+                    Instagram Page / Profile Link
+                  </label>
+                  <input 
+                    className="form-input" 
+                    type="url"
+                    placeholder="https://instagram.com/..." 
+                    value={formData.instaLink} 
+                    onChange={e => setFormData({...formData, instaLink: e.target.value})} 
+                  />
+                </div>
+              </div>
             </div>
+
           </div>
           <button className="form-submit" type="submit" disabled={isSubmitting} style={{ marginTop: '2.5rem', width: '100%' }}>
             {isSubmitting ? "PROCESSING..." : <>SUBMIT APPLICATION <ArrowRight /></>}
@@ -5752,8 +6068,9 @@ function RecruitmentModal({ onClose }) {
 function RecruitmentPage() {
   const [submitted, setSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [photos, setPhotos] = useState([]);
   const [formData, setFormData] = useState({
-    name: '', email: '', phone: '', dept: '', year: '', positions: [], otherPosition: '', portfolio: ''
+    name: '', email: '', phone: '', dept: '', year: '', positions: [], otherPosition: '', driveLink: '', instaLink: ''
   });
   const navigate = useNavigate();
 
@@ -5771,6 +6088,10 @@ function RecruitmentPage() {
       alert("Please specify your desired position for 'Others'.");
       return;
     }
+    if (photos.length === 0 && !formData.driveLink.trim() && !formData.instaLink.trim()) {
+      alert("Please upload at least 1 photo OR provide a Google Drive / Video link or Instagram link to showcase your work.");
+      return;
+    }
     setIsSubmitting(true);
     try {
       const positionsToSubmit = formData.positions.map(p => {
@@ -5780,18 +6101,24 @@ function RecruitmentPage() {
         return p;
       });
 
-      await addDoc(collection(db, "applications"), {
+      const applicationData = {
         ...formData,
         positions: positionsToSubmit,
         position: positionsToSubmit.join(', '),
+        photos,
+        driveLink: formData.driveLink.trim(),
+        instaLink: formData.instaLink.trim(),
+        portfolio: formData.driveLink.trim() || formData.instaLink.trim() || (photos[0] || ''),
         timestamp: serverTimestamp(),
         seen: false
-      });
-      sendApplicationConfirmationEmail({ ...formData, positions: positionsToSubmit });
+      };
+
+      await addDoc(collection(db, "applications"), applicationData);
+      sendApplicationConfirmationEmail(applicationData);
       setSubmitted(true);
     } catch (err) {
       console.error("Submission error:", err);
-      alert("Submission failed. Please check your internet.");
+      alert("Submission failed. Please check your internet connection.");
     } finally { setIsSubmitting(false); }
   };
 
@@ -5812,11 +6139,7 @@ function RecruitmentPage() {
     "Photo Editor",
     "PR Manager",
     "Content Writer",
-    "Co-ordinator",
     "Moderator",
-    "Videography Lead",
-    "Photography Lead",
-    "Authenticity Verifier",
     "Others"
   ];
 
@@ -5837,7 +6160,7 @@ function RecruitmentPage() {
 
   return (
     <section className="verify-section" style={{ minHeight: '80vh', padding: '8rem 0' }}>
-      <div className="container" style={{ maxWidth: '700px' }}>
+      <div className="container" style={{ maxWidth: '750px' }}>
         <div className="admin-modal glass-form fade-in visible" style={{ padding: '3rem', borderRadius: '24px', border: '1px solid var(--border)', background: 'rgba(255,255,255,0.02)', position: 'relative' }}>
           <button className="lightbox-close" onClick={() => navigate('/team')} style={{ top: '2rem', right: '2rem', position: 'absolute', background: 'transparent', border: 'none', color: 'white', fontSize: '1.5rem', cursor: 'pointer' }}>✕</button>
           <div className="section-label">✧ Join our legacy</div>
@@ -5910,10 +6233,48 @@ function RecruitmentPage() {
                   </div>
                 )}
               </div>
-              <div className="form-group" style={{ gridColumn: '1 / -1' }}>
-                <label className="week-credit-role" style={{ display: 'block', marginBottom: '0.6rem', color: 'var(--gold)', fontSize: '0.7rem' }}>Portfolio Link (G-Drive / Behance) (Optional)</label>
-                <input className="form-input" placeholder="https://..." value={formData.portfolio} onChange={e => setFormData({...formData, portfolio: e.target.value})} />
+
+              {/* Photo Uploader */}
+              <RecruitmentPhotoUploader photos={photos} setPhotos={setPhotos} maxPhotos={10} />
+
+              {/* Showcase Links Section */}
+              <div style={{ gridColumn: '1 / -1', marginTop: '0.5rem', borderTop: '1px dashed rgba(255,255,255,0.15)', paddingTop: '1.5rem' }}>
+                <div style={{ color: 'var(--gold)', fontSize: '0.85rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>
+                  ✧ Work Showcase Links
+                </div>
+                <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.7)', marginBottom: '1.2rem', lineHeight: '1.5' }}>
+                  You can paste your video editings/Google Drive link and Instagram page link below. Submitting both is not mandatory, but at least one form of showcase (photos or links) is required.
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.2rem' }}>
+                  <div className="form-group">
+                    <label className="week-credit-role" style={{ display: 'block', marginBottom: '0.4rem', color: 'var(--gold)', fontSize: '0.7rem' }}>
+                      Google Drive / Video Editing Link
+                    </label>
+                    <input 
+                      className="form-input" 
+                      type="url"
+                      placeholder="https://drive.google.com/... or YouTube link" 
+                      value={formData.driveLink} 
+                      onChange={e => setFormData({...formData, driveLink: e.target.value})} 
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <label className="week-credit-role" style={{ display: 'block', marginBottom: '0.4rem', color: 'var(--gold)', fontSize: '0.7rem' }}>
+                      Instagram Page / Profile Link
+                    </label>
+                    <input 
+                      className="form-input" 
+                      type="url"
+                      placeholder="https://instagram.com/..." 
+                      value={formData.instaLink} 
+                      onChange={e => setFormData({...formData, instaLink: e.target.value})} 
+                    />
+                  </div>
+                </div>
               </div>
+
             </div>
             <button className="form-submit" type="submit" disabled={isSubmitting} style={{ marginTop: '2.5rem', width: '100%' }}>
               {isSubmitting ? "PROCESSING..." : <>SUBMIT APPLICATION <ArrowRight /></>}
