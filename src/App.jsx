@@ -5779,7 +5779,7 @@ function RecruitmentPhotoUploader({ photos, setPhotos, maxPhotos = 10 }) {
             {uploading ? uploadProgress : 'Click or Drag & Drop to Upload Best Photos'}
           </div>
           <div style={{ fontSize: '0.75rem', color: 'var(--gold)', marginTop: '0.4rem', opacity: 0.8 }}>
-            Direct Cloudinary upload · Select up to 10 photos showcasing your photography & editing skills
+            Select up to 10 photos showcasing your photography & editing skills
           </div>
         </div>
       )}
